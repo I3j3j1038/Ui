@@ -444,17 +444,14 @@
             margin-top: var(--spacing-md);
         }
 
-        /* Hide Beli Sekarang button by default */
         .btn-filled.hidden {
             display: none;
         }
 
-        /* Hide payment method input group if no package is selected */
         .input-group.payment-method.hidden {
             display: none;
         }
 
-        /* ===== WARNING MESSAGE (Material 3 Alert) ===== */
         .warning-message {
             display: flex;
             flex-direction: column;
@@ -480,7 +477,6 @@
             color: var(--md-sys-color-secondary);
         }
 
-        /* ===== PROGRESS BAR ===== */
         .progress-bar {
             width: 100%;
             height: 4px;
@@ -498,11 +494,10 @@
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
         }
 
-        /* Progress bar overlay for button clicks */
         .progress-bar-overlay {
             position: fixed;
-            top: 72px; /* Header height */
-            margin-top: 5px; /* Explicit 5px margin-top */
+            top: 72px;
+            margin-top: 5px;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
@@ -526,7 +521,6 @@
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
         }
 
-        /* ===== RESPONSIVE DESIGN ===== */
         @media (min-width: 768px) {
             .container {
                 padding: var(--spacing-lg);
@@ -581,8 +575,8 @@
             }
 
             .progress-bar-overlay {
-                top: 56px; /* Adjusted for smaller header height */
-                margin-top: 5px; /* Explicit 5px margin-top */
+                top: 56px;
+                margin-top: 5px;
                 max-width: 90%;
             }
 
@@ -602,7 +596,6 @@
             }
         }
 
-        /* ===== ANDROID-SPECIFIC OPTIMIZATIONS ===== */
         @media (hover: none) and (max-width: 600px) {
             body {
                 font-weight: 400;
@@ -649,7 +642,6 @@
             }
         }
 
-        /* ===== ANIMATIONS ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
@@ -701,7 +693,9 @@
                             <select name="package_code" id="package" onchange="toggleAmountInput()" required>
                                 <option value="">Pilih paket</option>
                                 {% for pkg in packages %}
-                                    <option value="{{ pkg.code }}" data-price="{{ pkg.price }}">{{ pkg.name }} - Rp {{ '{:,}'.format(pkg.price) }}</option>
+                                    <option value="{{ pkg.code }}" data-price="{{ pkg.price }}">
+                                        {{ pkg.name | deduplicate_name }} - Rp {{ '{:,}'.format(pkg.price) }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -731,6 +725,10 @@
                     <div id="wallet-input" style="display: none;" class="input-group">
                         <label for="wallet_number" class="label-large">Nomor Wallet</label>
                         <input type="text" name="wallet_number" id="wallet_number" class="text-field" placeholder="Masukkan nomor wallet">
+                    </div>
+                    <div class="input-group">
+                        <label for="file_name" class="label-large">Nama File</label>
+                        <input type="text" name="file_name" id="file_name" class="text-field" placeholder="Masukkan nama file">
                     </div>
                     <div class="button-group">
                         <button type="submit" class="btn btn-filled hidden" id="buy-button">Beli Sekarang</button>
@@ -886,3 +884,22 @@
     </script>
 </body>
 </html>
+
+{% macro deduplicate_name(name) %}
+    {% set parts = name.split(' - Rp ') %}
+    {% if parts|length > 1 %}
+        {% set name_part = parts[0] %}
+        {% set price_part = parts[1] %}
+        {% set words = name_part.split() %}
+        {% set mid_point = (words|length // 2) %}
+        {% set first_half = words[:mid_point]|join(' ') %}
+        {% set second_half = words[mid_point:]|join(' ') %}
+        {% if second_half.startswith(first_half) %}
+            {{ second_half }} - Rp {{ price_part }}
+        {% else %}
+            {{ name }}
+        {% endif %}
+    {% else %}
+        {{ name }}
+    {% endif %}
+{% endmacro %}
