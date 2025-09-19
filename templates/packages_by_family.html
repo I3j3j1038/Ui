@@ -682,7 +682,7 @@
             <div class="card">
                 <h2>{{ 'Beli Paket Keluarga' if family_packages else 'Beli Paket Enterprise' }}</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <form method="POST" action="{{ url_for('family_packages' if family_packages else 'enterprise_packages') }}" id="search-form" {{ 'style="display: none;"' if packages else '' }}>
+                <form method="POST" action="{{ url_for('family_packages' if family_packages else 'enterprise_packages') }}" id="search-form" {% if packages is defined and packages %}style="display: none;"{% else %}style="display: block;"{% endif %}>
                     <div class="input-group">
                         <label for="family_code" class="label-large">Masukkan Kode Keluarga</label>
                         <input type="text" name="family_code" id="family_code" class="text-field" placeholder="e.g., XTRA_COMBO" value="{{ family_code|default('') }}" required>
@@ -693,7 +693,7 @@
                     </div>
                 </form>
                 {% if packages is defined and packages %}
-                    <form method="POST" action="{{ url_for('purchase') }}" id="purchase-form">
+                    <form method="POST" action="{{ url_for('purchase') }}" id="purchase-form" style="display: block;">
                         <input type="hidden" name="payment_for" value="BUY_PACKAGE">
                         <div class="input-group">
                             <label for="package" class="label-large">Pilih Paket</label>
