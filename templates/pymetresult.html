@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Pembayaran</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --md-sys-color-primary: #1e3a8a;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d0e7ff;
+            --md-sys-color-on-primary-container: #0f1e5e;
+            --md-sys-color-secondary: #10b981;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #a7f3d0;
+            --md-sys-color-on-secondary-container: #064e3b;
+            --md-sys-color-surface: #f0f7ff;
+            --md-sys-color-surface-container-low: #f8fafc;
+            --md-sys-color-on-surface: #1e293b;
+            --md-sys-color-on-surface-variant: #64748b;
+            --md-sys-color-outline: #e2e8f0;
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+            --md-typ-display-large: 3.5rem;
+            --md-typ-headline-medium: 2rem;
+            --md-typ-title-large: 1.5rem;
+            --md-typ-body-medium: 1rem;
+            --md-typ-label-large: 0.875rem;
+            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .headline-small {
+            font-size: var(--md-typ-title-large);
+            font-weight: 700;
+            line-height: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            margin-top: calc(var(--spacing-lg) + 72px);
+        }
+
+        .page {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            box-shadow: var(--md-sys-elevation-1);
+            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .card h2 {
+            font-size: var(--md-typ-headline-medium);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card p.body-medium {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+
+        .btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-large);
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            text-decoration: none;
+            margin-top: var(--spacing-sm);
+        }
+
+        .btn-filled {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .btn-filled:hover {
+            background: var(--md-sys-color-primary-container);
+            box-shadow: var(--md-sys-elevation-2);
+            transform: scale(1.02);
+        }
+
+        .btn-outlined {
+            background: transparent;
+            color: var(--md-sys-color-primary);
+            border: 2px solid var(--md-sys-color-primary);
+        }
+
+        .btn-outlined:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .copy-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.75rem;
+            border: 1px solid var(--md-sys-color-primary);
+            border-radius: var(--md-sys-shape-corner-small);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .copy-btn:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .result-content {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .success .result-icon {
+            color: var(--md-sys-color-secondary);
+        }
+
+        .error .result-icon {
+            color: #dc2626;
+        }
+
+        .qr-image {
+            max-width: 300px;
+            height: auto;
+            border-radius: var(--md-sys-shape-corner-medium);
+            margin: var(--spacing-md) auto;
+            display: block;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .qr-fallback {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+            word-break: break-all;
+            margin-top: var(--spacing-sm);
+        }
+
+        .deeplink-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+
+        .deeplink-btn {
+            background: var(--md-sys-color-secondary);
+            color: var(--md-sys-color-on-secondary);
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-large);
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .deeplink-btn:hover {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .error-details {
+            background: #fee2e2;
+            border-radius: var(--md-sys-shape-corner-small);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            border-left: 4px solid #dc2626;
+            text-align: left;
+        }
+
+        .error-details h3 {
+            font-size: var(--md-typ-title-large);
+            color: #dc2626;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .error-details pre {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface);
+            background: #fff;
+            padding: var(--spacing-sm);
+            border-radius: var(--md-sys-shape-corner-small);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .warning-message {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: #fee2e2;
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid #dc2626;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .success-message {
+            background: var(--md-sys-color-secondary-container);
+            border-left: 4px solid var(--md-sys-color-secondary);
+        }
+
+        .warning-icon {
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .success-message .warning-icon {
+            color: var(--md-sys-color-secondary);
+        }
+
+        .progress-bar-overlay {
+            position: fixed;
+            top: calc(72px + 5px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            z-index: 2000;
+        }
+
+        .progress-bar-overlay.active {
+            display: block;
+        }
+
+        .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        @media (max-width: 600px) {
+            .app-header { padding: var(--spacing-sm) var(--spacing-md); }
+            .app-header img { width: 40px; height: 40px; }
+            .headline-small { font-size: var(--md-typ-body-medium); }
+            .card { padding: var(--spacing-md); }
+            .card h2 { font-size: 1.25rem; }
+            .container { padding: var(--spacing-sm); margin-top: calc(var(--spacing-sm) + 56px); }
+            .btn { padding: var(--spacing-sm) var(--spacing-md); min-height: 48px; }
+            .copy-btn { font-size: 0.65rem; min-height: 20px; }
+            .result-icon { font-size: 3rem; }
+            .qr-image { max-width: 200px; }
+            .progress-bar-overlay { top: calc(56px + 5px); max-width: 90%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo DOR XL" loading="lazy">
+        <h1 class="headline-small">DOR XL</h1>
+    </header>
+
+    <div class="container">
+        <main id="content" class="page">
+            <div class="card">
+                <h2>Hasil Pembayaran</h2>
+                <div class="result-content {{ 'success' if status == 'SUCCESS' else 'error' }}">
+                    <div class="result-icon" aria-hidden="true">
+                        {% if status == 'SUCCESS' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% else %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% endif %}
+                    </div>
+                    <p class="body-medium">{{ message | safe }}</p>
+                    
+                    {% if qr_url and status == 'SUCCESS' %}
+                        <img src="{{ qr_url | safe }}" alt="Kode QRIS" class="qr-image" id="qrisImage" loading="lazy" 
+                             onerror="this.style.display='none'; document.getElementById('qrisFallback').style.display='block';">
+                        <p class="body-medium qr-fallback" id="qrisFallback" style="display: none;">
+                            Gambar QRIS gagal dimuat.
+                        </p>
+                        <p class="body-medium">Scan kode QRIS di atas menggunakan aplikasi pembayaran Anda.</p>
+                        <div class="copy-message-btn">
+                            <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ qr_url | safe }}', this)" 
+                                    aria-label="Salin URL QRIS">
+                                <i class="fas fa-copy"></i> Salin URL QRIS
+                            </button>
+                        </div>
+                    {% endif %}
+                    
+                    {% if deeplink and status == 'SUCCESS' %}
+                        <div class="deeplink-container">
+                            <a href="{{ deeplink | safe }}" class="deeplink-btn" target="_blank" rel="noopener noreferrer" 
+                               aria-label="Buka tautan pembayaran">
+                                <i class="fas fa-external-link-alt"></i> Buka Pembayaran
+                            </a>
+                            <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ deeplink | safe }}', this)" 
+                                    aria-label="Salin tautan pembayaran">
+                                <i class="fas fa-copy"></i> Salin Link
+                            </button>
+                        </div>
+                    {% endif %}
+                    
+                    {% if error_details and status != 'SUCCESS' %}
+                        <div class="error-details">
+                            <h3>Detail Error</h3>
+                            <pre>{{ error_details | tojson(indent=2) | safe }}</pre>
+                            <div class="copy-message-btn">
+                                <button class="btn btn-text copy-btn" onclick="copyErrorDetails(this)" 
+                                        aria-label="Salin detail error">
+                                    <i class="fas fa-copy"></i> Salin Detail Error
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if status != 'SUCCESS' and not error_details %}
+                        <div class="copy-message-btn">
+                            <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ message | safe }}', this)" 
+                                    aria-label="Salin pesan error">
+                                <i class="fas fa-copy"></i> Salin Pesan Error
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="button-group" style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; justify-content: center;">
+                    <a href="{{ url_for('index') }}" class="btn btn-filled" onclick="showProgressBar(this)" 
+                       aria-label="Kembali ke beranda">Kembali ke Beranda</a>
+                    <a href="{{ url_for('buy_package') }}" class="btn btn-outlined" onclick="showProgressBar(this)" 
+                       aria-label="Beli lagi">Beli Lagi</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showProgressBar(element) {
+            if (element.classList.contains('copy-btn') || element.classList.contains('deeplink-btn')) return;
+            element.style.pointerEvents = 'none';
+            const overlay = document.createElement('div');
+            overlay.className = 'progress-bar-overlay active';
+            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
+            document.body.appendChild(overlay);
+            if (element.tagName === 'A' && element.href) {
+                setTimeout(() => { window.location.href = element.href; }, 100);
+            }
+        }
+
+        function copyToClipboard(text, button) {
+            if (!text) {
+                button.innerHTML = '<i class="fas fa-exclamation"></i> Tidak ada teks!';
+                setTimeout(() => { button.innerHTML = '<i class="fas fa-copy"></i> Salin'; }, 1500);
+                return;
+            }
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    button.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                    setTimeout(() => { 
+                        button.innerHTML = '<i class="fas fa-copy"></i> Salin Link'; 
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Gagal menyalin: ', err);
+                    fallbackCopy(text, button);
+                });
+            } else {
+                fallbackCopy(text, button);
+            }
+        }
+
+        function fallbackCopy(text, button) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                button.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                setTimeout(() => { 
+                    button.innerHTML = '<i class="fas fa-copy"></i> Salin Link'; 
+                }, 1500);
+            } catch (err) {
+                console.error('Gagal menyalin: ', err);
+                button.innerHTML = '<i class="fas fa-exclamation"></i> Gagal!';
+                setTimeout(() => { 
+                    button.innerHTML = '<i class="fas fa-copy"></i> Salin Link'; 
+                }, 1500);
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function copyErrorDetails(button) {
+            const errorDetails = {{ error_details | tojson | safe }};
+            if (!errorDetails) {
+                button.innerHTML = '<i class="fas fa-exclamation"></i> Tidak ada detail!';
+                setTimeout(() => { button.innerHTML = '<i class="fas fa-copy"></i> Salin Detail Error'; }, 1500);
+                return;
+            }
+            const text = JSON.stringify(errorDetails, null, 2);
+            copyToClipboard(text, button);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card').forEach(card => card.classList.add('visible'));
+        });
+    </script>
+</body>
+</html>

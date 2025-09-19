@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XL Package Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* ===== MATERIAL 3 VARIABLES ===== */
+        :root {
+            --md-sys-color-primary: #1e3a8a;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d0e7ff;
+            --md-sys-color-on-primary-container: #0f1e5e;
+            --md-sys-color-secondary: #10b981;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #a7f3d0;
+            --md-sys-color-on-secondary-container: #064e3b;
+            --md-sys-color-surface: #f0f7ff;
+            --md-sys-color-surface-container-low: #f8fafc;
+            --md-sys-color-on-surface: #1e293b;
+            --md-sys-color-on-surface-variant: #64748b;
+            --md-sys-color-outline: #e2e8f0;
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+            --md-typ-display-large: 3.5rem;
+            --md-typ-headline-medium: 2rem;
+            --md-typ-title-large: 1.5rem;
+            --md-typ-body-medium: 1rem;
+            --md-typ-label-large: 0.875rem;
+            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        /* ===== BASE STYLES ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* ===== HEADER (Material 3 Top App Bar) ===== */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px var(--md-sys-color-shadow));
+        }
+
+        .headline-small {
+            font-size: var(--md-typ-title-large);
+            font-weight: 700;
+            line-height: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            margin-top: calc(var(--spacing-lg) + 72px);
+        }
+
+        .page {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            width: 100%;
+        }
+
+        /* ===== CARD STYLES (Material 3 Surface) ===== */
+        .card, .account-info, .main-menu {
+            background-color: var(--md-sys-color-surface-container-low);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            box-shadow: var(--md-sys-elevation-1);
+            width: 100%;
+            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        .card h2, .account-info h2, .main-menu h2 {
+            font-size: var(--md-typ-headline-medium);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.02em;
+        }
+
+        .card p.body-medium, .account-info p.body-medium {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* ===== FORM STYLES (Material 3 Text Fields) ===== */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .label-large {
+            font-size: var(--md-typ-label-large);
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .text-field {
+            padding: 14px var(--spacing-md);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: 16px;
+            background: var(--md-sys-color-surface);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            width: 100%;
+            min-height: 48px;
+        }
+
+        .text-field:focus {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+            outline: none;
+            font-weight: 700;
+        }
+
+        /* ===== BUTTON STYLES (Material 3 Buttons) ===== */
+        .btn {
+            position: relative;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-large);
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            min-height: 48px;
+            display: flex;
+            margin-top: 10px;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .btn-filled {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .btn-filled:hover {
+            background: var(--md-sys-color-primary-container);
+            box-shadow: var(--md-sys-elevation-2);
+            transform: scale(1.02);
+        }
+
+        .btn-filled:active {
+            background: var(--md-sys-color-secondary);
+            transform: scale(0.98);
+        }
+
+        .btn-filled::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-filled:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-outlined {
+            background: transparent;
+            color: var(--md-sys-color-primary);
+            border: 2px solid var(--md-sys-color-primary);
+            box-shadow: none;
+        }
+
+        .btn-outlined:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: scale(1.02);
+        }
+
+        .btn-outlined:active {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            transform: scale(0.98);
+        }
+
+        .btn-outlined::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-outlined:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-primary);
+            padding: var(--spacing-sm);
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .btn-text:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .btn-text:active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .btn-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-text:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .copy-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.75rem;
+            min-height: 24px;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            border: 1px solid var(--md-sys-color-primary);
+            border-radius: var(--md-sys-shape-corner-small);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-primary);
+        }
+
+        .copy-btn i {
+            font-size: 0.75rem;
+            color: var(--md-sys-color-primary);
+        }
+
+        .copy-btn:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .copy-btn:hover i {
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .copy-btn:active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .copy-btn:active i {
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .copy-btn:disabled {
+            border-color: var(--md-sys-color-on-surface-variant);
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: not-allowed;
+        }
+
+        .copy-btn:disabled i {
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* Message copy button container */
+        .copy-message-btn {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: var(--spacing-sm);
+        }
+
+        .code-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+            flex-wrap: nowrap;
+        }
+
+        .code-item span {
+            max-width: 200px;
+            overflow-wrap: break-word;
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .code-column {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        /* ===== LIST STYLES (Material 3 List Items) ===== */
+        .list-container {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            width: 100%;
+        }
+
+        .list-container li {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: var(--spacing-md);
+            background: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid var(--md-sys-color-primary);
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .list-container li:hover {
+            background: var(--md-sys-color-primary-container);
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .list-container li strong {
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* ===== CUSTOM SELECT (Material 3 Select) ===== */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select select {
+            width: 100%;
+            padding: 14px var(--spacing-md);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: 16px;
+            background: var(--md-sys-color-surface);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            appearance: none;
+            box-sizing: border-box;
+            min-height: 48px;
+        }
+
+        .custom-select select:focus {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+            outline: none;
+            font-weight: 700;
+        }
+
+        .custom-select::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--md-sys-color-on-surface-variant);
+            pointer-events: none;
+        }
+
+        /* ===== MENU GRID (Material 3 Cards, Fixed 2x3 Layout) ===== */
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            width: 100%;
+        }
+
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-medium);
+            background: var(--md-sys-color-surface-container-low);
+            border: 1px solid var(--md-sys-color-outline);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+            box-shadow: var(--md-sys-elevation-1);
+            box-sizing: border-box;
+            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+            opacity: 0;
+        }
+
+        .grid-item:nth-child(1) { animation-delay: 0.1s; }
+        .grid-item:nth-child(2) { animation-delay: 0.2s; }
+        .grid-item:nth-child(3) { animation-delay: 0.3s; }
+        .grid-item:nth-child(4) { animation-delay: 0.4s; }
+        .grid-item:nth-child(5) { animation-delay: 0.5s; }
+        .grid-item:nth-child(6) { animation-delay: 0.6s; }
+
+        .grid-item:hover {
+            transform: scale(1.03);
+            box-shadow: var(--md-sys-elevation-2);
+            background: linear-gradient(135deg, var(--md-sys-color-primary-container) 0%, var(--md-sys-color-surface-container-low) 100%);
+        }
+
+        .grid-item:active {
+            transform: scale(0.98);
+            background: var(--md-sys-color-secondary-container);
+        }
+
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .grid-item:active::after {
+            width: 400px;
+            height: 400px;
+        }
+
+        .grid-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: var(--spacing-md);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .grid-item:hover .grid-icon, .grid-item:active .grid-icon {
+            background: var(--md-sys-color-secondary);
+            transform: scale(1.1);
+        }
+
+        .grid-title {
+            font-size: var(--md-typ-body-medium);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: var(--spacing-xs);
+            text-transform: uppercase;
+        }
+
+        .grid-description {
+            font-size: var(--md-typ-label-large);
+            color: var(--md-sys-color-on-surface-variant);
+            line-height: 1.4;
+        }
+
+        .grid-item:active .grid-title,
+        .grid-item:active .grid-description {
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        /* Progress bar overlay for button and menu clicks */
+        .progress-bar-overlay {
+            position: fixed;
+            top: calc(72px + 5px); /* Header height (72px) + 5px margin-top */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            z-index: 2000;
+        }
+
+        .progress-bar-overlay.active {
+            display: block;
+        }
+
+        .progress-bar-overlay .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        /* ===== WARNING MESSAGE (Material 3 Alert) ===== */
+        .warning-message {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: #fee2e2;
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid #dc2626;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .success-message {
+            background: var(--md-sys-color-secondary-container);
+            border-left: 4px solid var(--md-sys-color-secondary);
+        }
+
+        .warning-icon {
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .success-message .warning-icon {
+            color: var(--md-sys-color-secondary);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (min-width: 768px) {
+            .container {
+                padding: var(--spacing-lg);
+                margin-top: calc(var(--spacing-lg) + 72px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .app-header {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .app-header img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .headline-small {
+                font-size: var(--md-typ-body-medium);
+                font-weight: 700;
+            }
+
+            .card h2, .account-info h2, .main-menu h2 {
+                font-size: 1.25rem;
+            }
+
+            .card, .account-info, .main-menu {
+                padding: var(--spacing-md);
+            }
+
+            .container {
+                padding: var(--spacing-sm);
+                margin-top: calc(var(--spacing-sm) + 56px);
+            }
+
+            .grid-item {
+                padding: var(--spacing-md);
+                min-height: 140px;
+            }
+
+            .grid-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .grid-title {
+                font-size: var(--md-typ-label-large);
+            }
+
+            .grid-description {
+                font-size: 0.75rem;
+            }
+
+            .btn {
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: var(--md-typ-label-large);
+                min-height: 48px;
+            }
+
+            .text-field, .custom-select select {
+                padding: 14px var(--spacing-md);
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .copy-btn {
+                font-size: 0.65rem;
+                min-height: 20px;
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .copy-btn i {
+                font-size: 0.65rem;
+            }
+
+            .code-item span {
+                max-width: 150px;
+                font-size: 0.875rem;
+            }
+
+            .code-column {
+                max-width: 100%;
+            }
+
+            .progress-bar-overlay {
+                top: calc(56px + 5px); /* Adjusted for smaller header height + 5px margin-top */
+                max-width: 90%;
+            }
+
+            .copy-message-btn .copy-btn {
+                font-size: 0.65rem;
+                min-height: 20px;
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .copy-message-btn .copy-btn i {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ===== ANDROID-SPECIFIC OPTIMIZATIONS ===== */
+        @media (hover: none) and (max-width: 600px) {
+            body {
+                font-weight: 400;
+                text-rendering: optimizeSpeed;
+            }
+
+            .text-field, .custom-select select, .btn, .btn-text {
+                font-weight: 500;
+            }
+
+            .text-field:focus, .custom-select select:focus {
+                font-weight: 700;
+            }
+
+            .grid-item {
+                border: 1px solid var(--md-sys-color-outline);
+                background: var(--md-sys-color-surface-container-low);
+                box-shadow: var(--md-sys-elevation-1);
+            }
+
+            .grid-item:active {
+                transform: scale(0.98);
+                background: var(--md-sys-color-primary-container);
+                color: var(--md-sys-color-on-primary-container);
+            }
+
+            .grid-item:active .grid-title,
+            .grid-item:active .grid-description {
+                color: var(--md-sys-color-on-primary-container);
+            }
+
+            .grid-icon {
+                background: var(--md-sys-color-secondary);
+            }
+
+            .btn-filled:active {
+                background: var(--md-sys-color-secondary);
+                transform: scale(0.98);
+            }
+
+            .btn-outlined:active {
+                background: var(--md-sys-color-primary);
+                color: var(--md-sys-color-on-primary);
+                transform: scale(0.98);
+            }
+
+            .btn-text:active {
+                background: var(--md-sys-color-primary-container);
+                color: var(--md-sys-color-on-primary-container);
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="width: 40px; height: 40px;">
+        <h1 class="headline-small">DOR XL</h1>
+    </header>
+
+    <!-- Content -->
+    <main id="content" class="page container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="warning-message {{ 'success-message' if category == 'success' else 'error-message' }}">
+                        <span class="warning-icon">!</span>
+                        <p>{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if request_phone %}
+            <div class="card">
+                <h2 class="headline-medium">Tambah Nomor Telepon</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                <p class="body-medium">Silakan masukkan nomor telepon untuk menerima kode OTP.</p>
+                <form method="POST" action="{{ url_for('index') }}">
+                    <div class="input-group">
+                        <label for="phone" class="label-large">Nomor Telepon</label>
+                        <input type="text" name="phone" id="phone" class="text-field" placeholder="081234567890 or 6281234567890" required>
+                    </div>
+                    <button type="submit" class="btn btn-filled">Kirim OTP</button>
+                </form>
+            </div>
+
+        {% elif switch_account %}
+            <div class="card">
+                <h2 class="headline-medium">Akun Tersimpan</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                {% if users|length == 0 %}
+                    <p class="body-medium">Tidak ada akun tersimpan.</p>
+                {% else %}
+                    <ul class="list-container">
+                        {% for user in users %}
+                            <li>
+                                <span>62{{ user.number }}{% if active_user and active_user.number == user.number %} (Aktif){% endif %}</span>
+                                <div>
+                                    {% if active_user and active_user.number != user.number %}
+                                        <form method="POST" action="{{ url_for('switch_account') }}" style="display: inline;">
+                                            <input type="hidden" name="action" value="switch">
+                                            <input type="hidden" name="number" value="{{ user.number }}">
+                                            <button type="submit" class="btn btn-text">Pilih</button>
+                                        </form>
+                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('switch_account') }}" style="display: inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="number" value="{{ user.number }}">
+                                        <button type="submit" class="btn btn-text">Hapus</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <form method="POST" action="{{ url_for('switch_account') }}">
+                    <input type="hidden" name="action" value="add">
+                    <div class="input-group">
+                        <label for="phone" class="label-large">Tambah Akun (Nomor Telepon)</label>
+                        <input type="text" name="phone" id="phone" class="text-field" placeholder="081234567890 or 6281234567890" required>
+                    </div>
+                    <button type="submit" class="btn btn-filled">Tambah</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                </form>
+            </div>
+
+        {% elif verify_otp %}
+            <div class="card">
+                <h2 class="headline-medium">Verifikasi OTP</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                <form method="POST" action="{{ url_for('verify_otp') }}">
+                    <div class="input-group">
+                        <label for="otp" class="label-large">Masukkan kode OTP 6 digit</label>
+                        <input type="text" name="otp" id="otp" class="text-field" required>
+                    </div>
+                    <button type="submit" class="btn btn-filled">Verifikasi</button>
+                </form>
+            </div>
+
+        {% elif my_packages %}
+            <div class="card">
+                <h2 class="headline-medium">Paket Saya</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                {% if packages|length == 0 %}
+                    <p class="body-medium">Tidak ada paket aktif.</p>
+                {% else %}
+                    <ul class="list-container">
+                        {% for pkg in packages %}
+                            <li>
+                                <strong>{{ pkg.name|default('Unknown') }}</strong>
+                                <div class="code-column">
+                                    <div class="code-item">
+                                        <span>Kode Kuota: {{ pkg.quota_code|default('N/A') }}</span>
+                                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ pkg.quota_code|default('N/A') }}', this)" {% if pkg.quota_code|default('N/A') == 'N/A' %}disabled{% endif %}><i class="fas fa-copy"></i> Salin</button>
+                                    </div>
+                                    <div class="code-item">
+                                        <span>Kode Keluarga: {{ pkg.family_code|default('N/A') }}</span>
+                                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ pkg.family_code|default('N/A') }}', this)" {% if pkg.family_code|default('N/A') == 'N/A' %}disabled{% endif %}><i class="fas fa-copy"></i> Salin</button>
+                                    </div>
+                                    <div class="code-item">
+                                        <span>Kode Grup: {{ pkg.group_code|default('N/A') }}</span>
+                                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ pkg.group_code|default('N/A') }}', this)" {% if pkg.group_code|default('N/A') == 'N/A' %}disabled{% endif %}><i class="fas fa-copy"></i> Salin</button>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+            </div>
+
+        {% elif family_packages or enterprise_packages %}
+            <div class="card">
+                <h2 class="headline-medium">{{ 'Paket Keluarga' if family_packages else 'Paket Enterprise' }}: {{ family_name|default('Masukkan Kode Keluarga') }}</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                {% if packages is defined and packages %}
+                    <ul class="list-container">
+                        {% for pkg in packages %}
+                            <li>
+                                <div>
+                                    <strong>{{ pkg.name }}</strong><br>
+                                    Harga: Rp {{ '{:,}'.format(pkg.price) }}
+                                </div>
+                                <a href="{{ url_for('package_details', code=pkg.code) }}" class="btn btn-text">Detail</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                {% else %}
+                    <form method="POST" action="{{ url_for('family_packages' if family_packages else 'enterprise_packages') }}">
+                        <div class="input-group">
+                            <label for="family_code" class="label-large">Masukkan Kode Keluarga</label>
+                            <input type="text" name="family_code" id="family_code" class="text-field" placeholder="e.g., XTRA_COMBO" required>
+                        </div>
+                        <button type="submit" class="btn btn-filled">Cari Paket</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                    </form>
+                {% endif %}
+            </div>
+
+        {% elif package_details %}
+            <div class="card">
+                <h2 class="headline-medium">Detail Paket: {{ package_title }}</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                <div id="package-details-content">
+                    <p><strong>Harga:</strong> Rp {{ '{:,}'.format(package_price) }}</p>
+                    <p><strong>Detail:</strong><br>{{ package_detail }}</p>
+                    <p><strong>Manfaat:</strong><br>{{ package_benefits }}</p>
+                </div>
+                <form method="POST" action="{{ url_for('purchase') }}">
+                    <input type="hidden" name="package_code" value="{{ package_code }}">
+                    <input type="hidden" name="payment_for" value="{{ payment_for }}">
+                    <div class="input-group">
+                        <label for="payment_method" class="label-large">Metode Pembayaran</label>
+                        <div class="custom-select">
+                            <select name="payment_method" id="payment_method" onchange="toggleAmountInput()" required>
+                                <option value="">Pilih metode</option>
+                                <option value="BALANCE" data-logo="{{ url_for('static', filename='images/logo.png') }}">💸 Saldo</option>
+                                <option value="DANA" data-logo="{{ url_for('static', filename='images/dana.png') }}">DANA</option>
+                                <option value="OVO" data-logo="{{ url_for('static', filename='images/ovo.png') }}">OVO</option>
+                                <option value="GOPAY" data-logo="{{ url_for('static', filename='images/gopay.png') }}">GOPAY</option>
+                                <option value="SHOPEEPAY" data-logo="{{ url_for('static', filename='images/shopeepay.png') }}">SHOPEEPAY</option>
+                                <option value="QRIS" data-logo="{{ url_for('static', filename='images/logo.png') }}">📷 QRIS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="amount-input" {% if package_price != 0 %}style="display: none;"{% endif %} class="input-group">
+                        <label for="amount" class="label-large">Jumlah Pembayaran</label>
+                        <input type="number" name="amount" id="amount" class="text-field" placeholder="Masukkan jumlah" min="0">
+                    </div>
+                    <div id="wallet-input" style="display: none;" class="input-group">
+                        <label for="wallet_number" class="label-large">Nomor Wallet</label>
+                        <input type="text" name="wallet_number" id="wallet_number" class="text-field" placeholder="Masukkan nomor wallet">
+                    </div>
+                    <button type="submit" class="btn btn-filled">Beli Sekarang</button>
+                </form>
+                <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+            </div>
+
+        {% else %}
+            <div class="card account-info">
+                <h2 class="headline-medium">Informasi Akun</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                <p class="body-medium"><strong>User ID:</strong> {{ user_id }}</p>
+                <p class="body-medium"><strong>📱 Nomor:</strong> {{ phone_number }}</p>
+                <p class="body-medium"><strong>💰 Pulsa:</strong> Rp {{ '{:,}'.format(remaining_balance) }}</p>
+                <p class="body-medium"><strong>📅 Masa aktif:</strong> {{ expired_at }}</p>
+            </div>
+
+            <div class="card main-menu">
+                <h2 class="headline-medium">Main Menu</h2>
+                <div class="grid-menu">
+                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('switch_account') }}')">
+                        <div class="grid-icon"><i class="fas fa-key"></i></div>
+                        <div class="grid-title">Ganti Akun</div>
+                        <div class="grid-description">Login atau ganti nomor telepon</div>
+                    </div>
+                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('my_packages') }}')">
+                        <div class="grid-icon"><i class="fas fa-list"></i></div>
+                        <div class="grid-title">Paket Saya</div>
+                        <div class="grid-description">Lihat paket aktif Anda</div>
+                    </div>
+                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('buy_package') }}')">
+                        <div class="grid-icon"><i class="fas fa-cube"></i></div>
+                        <div class="grid-title">Beli Paket XUT</div>
+                        <div class="grid-description">Pilih dan beli paket XUT</div>
+                    </div>
+                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('family_packages') }}')">
+                        <div class="grid-icon"><i class="fas fa-users"></i></div>
+                        <div class="grid-title">Paket Keluarga</div>
+                        <div class="grid-description">Beli berdasarkan family code</div>
+                    </div>
+                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('enterprise_packages') }}')">
+                        <div class="grid-icon"><i class="fas fa-building"></i></div>
+                        <div class="grid-title">Paket Enterprise</div>
+                        <div class="grid-description">Paket untuk kebutuhan bisnis</div>
+                    </div>
+                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('logout') }}')">
+                        <div class="grid-icon"><i class="fas fa-sign-out-alt"></i></div>
+                        <div class="grid-title">Logout</div>
+                        <div class="grid-description">Keluar dari akun Anda</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+    <script>
+        // Show progress bar for navigation
+        function showLoadingAnimation(element, url) {
+            element.style.pointerEvents = 'none'; // Disable further clicks
+            const overlay = document.createElement('div');
+            overlay.className = 'progress-bar-overlay active';
+            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
+            document.body.appendChild(overlay);
+
+            // Navigate to the URL without hiding the progress bar
+            window.location.href = url;
+        }
+
+        // Show progress bar for button clicks
+        function showProgressBar(element) {
+            if (element.classList.contains('copy-btn')) {
+                return; // Skip copy buttons
+            }
+
+            element.style.pointerEvents = 'none'; // Disable further clicks
+            const overlay = document.createElement('div');
+            overlay.className = 'progress-bar-overlay active';
+            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
+            document.body.appendChild(overlay);
+
+            // Handle form submission or navigation
+            if (element.tagName === 'BUTTON' && element.type === 'submit') {
+                const form = element.closest('form');
+                if (form) {
+                    form.submit(); // Submit form and let the progress bar persist
+                }
+            } else if (element.tagName === 'A' && element.href) {
+                window.location.href = element.href; // Navigate and let the progress bar persist
+            }
+        }
+
+        // Add event listeners to buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.btn, .btn-filled, .btn-outlined, .btn-text');
+            buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    if (!button.classList.contains('copy-btn')) {
+                        e.preventDefault();
+                        showProgressBar(button);
+                    }
+                });
+            });
+
+            // Show progress bar on page load
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                bar.style.display = 'block';
+                setTimeout(() => {
+                    bar.style.display = 'none';
+                }, 1500);
+            });
+
+            // Add visible class to cards after load
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => card.classList.add('visible'));
+        });
+
+        // Toggle amount and wallet inputs
+        function toggleAmountInput() {
+            const paymentMethod = document.getElementById('payment_method');
+            const amountInput = document.getElementById('amount-input');
+            const walletInput = document.getElementById('wallet-input');
+            if (['DANA', 'OVO', 'GOPAY', 'SHOPEEPAY'].includes(paymentMethod.value)) {
+                walletInput.style.display = 'block';
+            } else {
+                walletInput.style.display = 'none';
+            }
+        }
+
+        // Copy text to clipboard
+        function copyToClipboard(text, button) {
+            if (text === 'N/A') return;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            } else {
+                const tempInput = document.createElement('input');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
+                    }, 1500);
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                }
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        // Ensure progress bar persists until page unloads
+        window.addEventListener('beforeunload', () => {
+            const overlay = document.querySelector('.progress-bar-overlay.active');
+            if (overlay) {
+                overlay.style.display = 'block'; // Keep progress bar visible during navigation
+            }
+        });
+    </script>
+</body>
+</html>
