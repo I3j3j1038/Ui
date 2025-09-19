@@ -705,6 +705,9 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        {% if not packages %}
+                            <p class="body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-top: var(--spacing-sm);">Tidak ada paket tersedia saat ini.</p>
+                        {% endif %}
                     </div>
                     <div class="input-group payment-method hidden" id="payment-method-group">
                         <label for="payment_method" class="label-large">Metode Pembayaran</label>
@@ -742,6 +745,21 @@
     </div>
 
     <script>
+        // Clean package names by removing redundant words
+        function cleanPackageName(name) {
+            const priceMatch = name.match(/ - Rp [\d,]+$/);
+            const pricePart = priceMatch ? priceMatch[0] : '';
+            const namePart = priceMatch ? name.replace(pricePart, '') : name;
+            const words = namePart.split(' ');
+            const uniqueWords = [];
+            words.forEach(word => {
+                if (!uniqueWords.includes(word) || !/^(Special|For|You)$/i.test(word)) {
+                    uniqueWords.push(word);
+                }
+            });
+            return `${uniqueWords.join(' ')}${pricePart}`;
+        }
+
         // Show progress bar for button clicks
         function showProgressBar(element) {
             if (element.classList.contains('copy-btn')) {
@@ -816,6 +834,13 @@
 
         // Show progress bar and card animation on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Clean package names in dropdown
+            const packageSelect = document.getElementById('package');
+            const options = packageSelect.querySelectorAll('option:not([value=""])');
+            options.forEach(option => {
+                option.textContent = cleanPackageName(option.textContent);
+            });
+
             const progressBars = document.querySelectorAll('.progress-bar');
             progressBars.forEach(bar => {
                 bar.style.display = 'block';
