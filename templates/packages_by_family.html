@@ -682,7 +682,7 @@
             <div class="card">
                 <h2>{{ 'Beli Paket Keluarga' if family_packages else 'Beli Paket Enterprise' }}</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <form method="POST" action="{{ url_for('family_packages' if family_packages else 'enterprise_packages') }}">
+                <form method="POST" action="{{ url_for('family_packages' if family_packages else 'enterprise_packages') }}" id="search-form" {{ 'style="display: none;"' if packages else '' }}>
                     <div class="input-group">
                         <label for="family_code" class="label-large">Masukkan Kode Keluarga</label>
                         <input type="text" name="family_code" id="family_code" class="text-field" placeholder="e.g., XTRA_COMBO" value="{{ family_code|default('') }}" required>
@@ -693,7 +693,7 @@
                     </div>
                 </form>
                 {% if packages is defined and packages %}
-                    <form method="POST" action="{{ url_for('purchase') }}">
+                    <form method="POST" action="{{ url_for('purchase') }}" id="purchase-form">
                         <input type="hidden" name="payment_for" value="BUY_PACKAGE">
                         <div class="input-group">
                             <label for="package" class="label-large">Pilih Paket</label>
@@ -737,7 +737,7 @@
                         </div>
                         <div class="button-group">
                             <button type="submit" class="btn btn-filled hidden" id="buy-button">Beli Sekarang</button>
-                            <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                            <button type="button" class="btn btn-outlined" onclick="showSearchForm()">Kembali</button>
                         </div>
                     </form>
                 {% endif %}
@@ -864,6 +864,17 @@
             updatePaymentLogo();
         }
 
+        // Show search form and hide purchase form
+        function showSearchForm() {
+            const searchForm = document.getElementById('search-form');
+            const purchaseForm = document.getElementById('purchase-form');
+            if (searchForm && purchaseForm) {
+                searchForm.style.display = 'block';
+                purchaseForm.style.display = 'none';
+                document.getElementById('family_code').value = ''; // Reset input kode keluarga
+            }
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             const packageSelect = document.getElementById('package');
@@ -888,8 +899,10 @@
             const buttons = document.querySelectorAll('.btn-filled, .btn-outlined');
             buttons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showProgressBar(button);
+                    if (!button.classList.contains('btn-outlined') || button.getAttribute('onclick') !== 'showSearchForm()') {
+                        e.preventDefault();
+                        showProgressBar(button);
+                    }
                 });
             });
 
