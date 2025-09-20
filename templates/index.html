@@ -6,7 +6,6 @@
     <title>XL Package Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Gaya CSS tetap sama seperti yang Anda berikan sebelumnya */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -41,7 +40,6 @@
             --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
         }
 
-        /* CSS lainnya tetap sama seperti yang Anda berikan */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -474,11 +472,19 @@
             border-radius: var(--md-sys-shape-corner-small);
             border-left: 4px solid #dc2626;
             margin-bottom: var(--spacing-md);
+            justify-content: space-between;
         }
 
         .success-message {
             background: var(--md-sys-color-secondary-container);
             border-left: 4px solid var(--md-sys-color-secondary);
+            justify-content: space-between;
+        }
+
+        .warning-message p {
+            flex-grow: 1;
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface);
         }
 
         .warning-icon {
@@ -607,6 +613,9 @@
                     <div class="warning-message {{ 'success-message' if category == 'success' else 'error-message' }}">
                         <span class="warning-icon">!</span>
                         <p>{{ message }}</p>
+                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ message }}', this)">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -715,7 +724,7 @@
             <div class="card account-info">
                 <h2 class="headline-medium">Informasi Akun</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <p class="body-medium"><strong>User ID:</strong> {{ user_id }}</p>
+                <p class="body-medium"><strong>👤 User ID:</strong> {{ user_id }}</p>
                 <p class="body-medium"><strong>📱 Nomor:</strong> {{ phone_number }}</p>
                 <p class="body-medium"><strong>💰 Pulsa:</strong> Rp {{ '{:,}'.format(remaining_balance) }}</p>
                 <p class="body-medium"><strong>📅 Masa aktif:</strong> {{ expired_at }}</p>
