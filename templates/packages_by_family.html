@@ -6,7 +6,6 @@
     <title>{{ 'Paket Keluarga' if family_packages else 'Paket Enterprise' }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* CSS tetap sama seperti yang Anda berikan */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -707,15 +706,12 @@
                             {% if not packages %}
                                 <p class="body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-top: var(--spacing-sm);">Tidak ada paket tersedia saat ini.</p>
                             {% else %}
-                                <!-- Tambahkan daftar paket dengan tombol Detail -->
-                                <ul class="list-container" style="margin-top: var(--spacing-md);">
+                                <!-- Tambahkan tombol Detail untuk setiap paket -->
+                                <div class="package-details" style="margin-top: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-sm);">
                                     {% for pkg in packages %}
-                                        <li style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span>{{ pkg.name }} - Rp {{ '{:,}'.format(pkg.price) }}</span>
-                                            <a href="{{ url_for('package_details', code=pkg.code) }}" class="btn btn-text">Detail</a>
-                                        </li>
+                                        <a href="{{ url_for('package_details', code=pkg.code) }}" class="btn btn-text">Detail {{ pkg.name }}</a>
                                     {% endfor %}
-                                </ul>
+                                </div>
                             {% endif %}
                         </div>
                         <div class="input-group payment-method hidden" id="payment-method-group">
@@ -755,21 +751,6 @@
     </div>
 
     <script>
-        // Clean package names by removing redundant words
-        function cleanPackageName(name) {
-            const priceMatch = name.match(/ - Rp [\d,]+$/);
-            const pricePart = priceMatch ? priceMatch[0] : '';
-            const namePart = priceMatch ? name.replace(pricePart, '') : name;
-            const words = namePart.split(' ');
-            const uniqueWords = [];
-            words.forEach(word => {
-                if (!uniqueWords.includes(word) || !/^(Special|For|You)$/i.test(word)) {
-                    uniqueWords.push(word);
-                }
-            });
-            return `${uniqueWords.join(' ')}${pricePart}`;
-        }
-
         // Show progress bar for button clicks
         function showProgressBar(element) {
             if (element.classList.contains('copy-btn')) {
@@ -886,14 +867,6 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
-            const packageSelect = document.getElementById('package');
-            if (packageSelect) {
-                const options = packageSelect.querySelectorAll('option:not([value=""])');
-                options.forEach(option => {
-                    option.textContent = cleanPackageName(option.textContent);
-                });
-            }
-
             const progressBars = document.querySelectorAll('.progress-bar');
             progressBars.forEach(bar => {
                 bar.style.display = 'block';
