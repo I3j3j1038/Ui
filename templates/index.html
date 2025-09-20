@@ -735,7 +735,7 @@
                 <h2 class="headline-medium">Informasi Akun</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
                 <p class="body-medium">Nomor: {{ phone_number }}</p>
-                <p class="body-medium">Saldo: {{ format_number(remaining_balance) }}</p>
+                <p class="body-medium">Saldo: {{ remaining_balance | format_number }}</p>
                 <p class="body-medium">Berlaku hingga: {{ expired_at }}</p>
                 <a href="{{ url_for('switch_account') }}" class="btn btn-outlined">Ganti Akun</a>
                 <a href="{{ url_for('logout') }}" class="btn btn-outlined">Logout</a>
