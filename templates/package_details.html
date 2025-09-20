@@ -6,7 +6,6 @@
     <title>Detail Paket - DOR XL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Existing styles remain unchanged */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -128,23 +127,12 @@
             margin-bottom: var(--spacing-md);
         }
 
-        /* Enhanced styles for detail and benefits sections */
-        .package-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
-
         .package-info__item {
             background-color: #ffffff;
             padding: var(--spacing-md);
             border-radius: var(--md-sys-shape-corner-small);
             box-shadow: var(--md-sys-elevation-1);
-            transition: transform 0.2s ease;
-        }
-
-        .package-info__item:hover {
-            transform: translateY(-2px);
+            margin-bottom: var(--spacing-md);
         }
 
         .package-info__item strong {
@@ -161,24 +149,27 @@
             font-size: var(--md-typ-body-medium);
             color: var(--md-sys-color-on-surface);
             line-height: 1.6;
-            padding-left: var(--spacing-sm);
-            list-style-type: disc;
         }
 
-        .package-info__item ul {
-            padding-left: var(--spacing-lg);
-            margin: 0;
+        .price-box {
+            background-color: #ffffff;
+            padding: var(--spacing-md);
+            border-radius: var(--md-sys-shape-corner-small);
+            box-shadow: var(--md-sys-elevation-1);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
         }
 
-        .package-info__item ul li {
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .price {
+        .price-box strong {
             font-size: var(--md-typ-title-large);
             color: var(--md-sys-color-secondary);
             font-weight: 600;
-            margin-bottom: var(--spacing-md);
+        }
+
+        .price-box span {
+            font-size: var(--md-typ-title-large);
+            color: var(--md-sys-color-on-surface);
+            font-weight: 500;
         }
 
         @media (min-width: 768px) {
@@ -244,23 +235,17 @@
         {% endwith %}
 
         <div class="card">
-            <h2 class="headline-medium">Detail Paket: {{ package_title | default('Bundling Bundling 60GB Setahun') }}</h2>
-            <div class="price">Harga: Rp <span id="formatted-price">{{ package_price | default(0) }}</span></div>
-            <div id="package-details-content" class="package-info">
-                <div class="package-info__item">
-                    <p><strong>Detail:</strong>
-                    <ul>
-                        <li>{{ package_detail | safe }}.</li>
-                   
-                    </ul>
-                </div>
-                <div class="package-info__item">
-                    <p><strong>Manfaat:</strong>
-                    <ul>
-                        <li>{{ package_benefits }}</li>
-
-                    </ul>
-                </div>
+            <h2 class="headline-medium">Detail Paket: {{ package_title }}</h2>
+            <div class="price-box">
+                <strong>Harga:</strong> Rp <span id="formatted-price">{{ package_price }}</span>
+            </div>
+            <div class="package-info__item">
+                <strong>Detail:</strong>
+                <p>{{ package_detail | safe }}</p>
+            </div>
+            <div class="package-info__item">
+                <strong>Manfaat:</strong>
+                <p>{{ package_benefits }}</p>
             </div>
         </div>
     </main>
@@ -292,6 +277,3 @@
     </script>
 </body>
 </html>
-
-
-                
