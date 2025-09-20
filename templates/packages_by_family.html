@@ -438,7 +438,7 @@
             margin-top: var(--spacing-md);
         }
 
-        .btn-filled.hidden {
+        .btn-filled.hidden, .btn-text.hidden {
             display: none;
         }
 
@@ -706,11 +706,9 @@
                             {% if not packages %}
                                 <p class="body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-top: var(--spacing-sm);">Tidak ada paket tersedia saat ini.</p>
                             {% else %}
-                                <!-- Tambahkan tombol Detail untuk setiap paket -->
-                                <div class="package-details" style="margin-top: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-sm);">
-                                    {% for pkg in packages %}
-                                        <a href="{{ url_for('package_details', code=pkg.code) }}" class="btn btn-text">Detail {{ pkg.name }}</a>
-                                    {% endfor %}
+                                <!-- Single Detail button, shown only when a package is selected -->
+                                <div class="package-details" style="margin-top: var(--spacing-md);">
+                                    <a href="#" id="package-detail-btn" class="btn btn-text hidden">Detail Paket</a>
                                 </div>
                             {% endif %}
                         </div>
@@ -822,19 +820,25 @@
             }
         }
 
-        // Toggle amount, wallet inputs, and payment method visibility
+        // Toggle amount, wallet inputs, payment method, and detail button visibility
         function toggleAmountInput() {
             const packageSelect = document.getElementById('package');
             const paymentMethodGroup = document.getElementById('payment-method-group');
             const paymentMethod = document.getElementById('payment_method');
             const amountInput = document.getElementById('amount-input');
             const walletInput = document.getElementById('wallet-input');
+            const detailButton = document.getElementById('package-detail-btn');
 
             if (packageSelect.value) {
                 paymentMethodGroup.classList.remove('hidden');
+                // Show and update the Detail button
+                detailButton.classList.remove('hidden');
+                detailButton.href = `/package_details/${packageSelect.value}`; // Dynamically set href based on selected package code
+                detailButton.textContent = `Detail ${packageSelect.options[packageSelect.selectedIndex].text.split(' - ')[0]}`; // Show package name
             } else {
                 paymentMethodGroup.classList.add('hidden');
                 paymentMethod.value = '';
+                detailButton.classList.add('hidden'); // Hide Detail button when no package is selected
                 updatePaymentLogo();
             }
 
