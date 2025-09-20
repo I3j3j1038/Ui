@@ -271,10 +271,10 @@
         {% endwith %}
 
         <div class="card">
-            <h2 class="headline-medium">Detail Paket: {{ package_title }}</h2>
+            <h2 class="headline-medium">Detail Paket: {{ package_title | default('Tidak Diketahui') }}</h2>
             <div id="package-details-content">
-                <p><strong>Harga:</strong> Rp {{ '{:,}'.format(package_price) }}</p>
-                <p><strong>Detail:</strong><br>{{ package_detail }}</p>
+                <p><strong>Harga:</strong> Rp {{ package_price | default(0) | int | format_number }}</p>
+                <p><strong>Detail:</strong><br>{{ package_detail | safe }}</p>
                 <p><strong>Manfaat:</strong><br>{{ package_benefits }}</p>
             </div>
             <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
