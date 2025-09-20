@@ -603,11 +603,6 @@
     <header class="app-header">
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="width: 40px; height: 40px;">
         <h1 class="headline-small">DOR XL</h1>
-        <div style="margin-left: auto;">
-            <a href="{{ url_for('profile') }}" class="btn btn-text" onclick="showLoadingAnimation(this, '{{ url_for('profile') }}')">
-                <i class="fas fa-user"></i>
-            </a>
-        </div>
     </header>
 
     <!-- Content -->
@@ -722,7 +717,7 @@
                 <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
             </div>
 
-        {% elif show_account_info %}
+        {% else %}
             <div class="card account-info">
                 <h2 class="headline-medium">Informasi Akun</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
@@ -730,10 +725,8 @@
                 <p class="body-medium"><strong>📱 Nomor:</strong> {{ phone_number }}</p>
                 <p class="body-medium"><strong>💰 Pulsa:</strong> Rp {{ '{:,}'.format(remaining_balance) }}</p>
                 <p class="body-medium"><strong>📅 Masa aktif:</strong> {{ expired_at }}</p>
-                <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
             </div>
 
-        {% elif show_main_menu %}
             <div class="card main-menu">
                 <h2 class="headline-medium">Main Menu</h2>
                 <div class="grid-menu">
