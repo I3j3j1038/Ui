@@ -6,7 +6,7 @@
     <title>Detail Paket - DOR XL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Menggunakan gaya yang sama dari index.html */
+        /* Existing styles remain unchanged */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -128,256 +128,31 @@
             margin-bottom: var(--spacing-md);
         }
 
-        .btn {
-            position: relative;
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--md-sys-shape-corner-large);
-            font-size: var(--md-typ-label-large);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            text-align: center;
-            width: 100%;
-            overflow: hidden;
-            min-height: 48px;
+        /* New styles for detail and benefits sections */
+        .package-info {
             display: flex;
-            margin-top: 10px;
-            align-items: center;
-            justify-content: center;
-            text-transform: uppercase;
-            text-decoration: none;
+            flex-direction: column;
+            gap: var(--spacing-md);
         }
 
-        .btn-outlined {
-            background: transparent;
-            color: var(--md-sys-color-primary);
-            border: 2px solid var(--md-sys-color-primary);
-            box-shadow: none;
-        }
-
-        .btn-outlined:hover {
-            background: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
-            transform: scale(1.02);
-        }
-
-        .btn-outlined:active {
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            transform: scale(0.98);
-        }
-
-        .warning-message {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
+        .package-info__item {
+            background-color: #ffffff;
             padding: var(--spacing-md);
-            background: #fee2e2;
             border-radius: var(--md-sys-shape-corner-small);
-            border-left: 4px solid #dc2626;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .success-message {
-            background: var(--md-sys-color-secondary-container);
-            border-left: 4px solid var(--md-sys-color-secondary);
-        }
-
-        .warning-icon {
-            font-weight: 700;
-            color: #dc2626;
-        }
-
-        .success-message .warning-icon {
-            color: var(--md-sys-color-secondary);
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                padding: var(--spacing-lg);
-                margin-top: calc(var(--spacing-lg) + 72px);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .app-header {
-                padding: var(--spacing-sm) var(--spacing-md);
-            }
-
-            .app-header img {
-                width: 40px;
-                height: 40px;
-            }
-
-            .headline-small {
-                font-size: var(--md-typ-body-medium);
-                font-weight: 700;
-            }
-
-            .card {
-                padding: var(--spacing-md);
-            }
-
-            .card h2 {
-                font-size: 1.25rem;
-            }
-
-            .container {
-                padding: var(--spacing-sm);
-                margin-top: calc(var(--spacing-sm) + 56px);
-            }
-
-            .btn {
-                padding: var(--spacing-sm) var(--spacing-md);
-                font-size: var(--md-typ-label-large);
-                min-height: 48px;
-            }
-
-            .progress-bar-overlay {
-                top: calc(56px + 5px);
-                max-width: 90%;
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes progress {
-            0% { width: 0; }
-            100% { width: 100%; }
-        }
-    </style>
-</head>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Paket - DOR XL</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-        /* Menggunakan gaya yang sama dari index.html */
-        :root {
-            --md-sys-color-primary: #1e3a8a;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #d0e7ff;
-            --md-sys-color-on-primary-container: #0f1e5e;
-            --md-sys-color-secondary: #10b981;
-            --md-sys-color-on-secondary: #ffffff;
-            --md-sys-color-secondary-container: #a7f3d0;
-            --md-sys-color-on-secondary-container: #064e3b;
-            --md-sys-color-surface: #f0f7ff;
-            --md-sys-color-surface-container-low: #f8fafc;
-            --md-sys-color-on-surface: #1e293b;
-            --md-sys-color-on-surface-variant: #64748b;
-            --md-sys-color-outline: #e2e8f0;
-            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
-            --md-typ-display-large: 3.5rem;
-            --md-typ-headline-medium: 2rem;
-            --md-typ-title-large: 1.5rem;
-            --md-typ-body-medium: 1rem;
-            --md-typ-label-large: 0.875rem;
-            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --spacing-xxl: 48px;
-            --md-sys-shape-corner-small: 8px;
-            --md-sys-shape-corner-medium: 12px;
-            --md-sys-shape-corner-large: 16px;
-            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-            --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--md-sys-color-surface);
-            color: var(--md-sys-color-on-surface);
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            user-select: none;
-            overflow-x: hidden;
-        }
-
-        .app-header {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            padding: var(--spacing-md) var(--spacing-lg);
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
             box-shadow: var(--md-sys-elevation-1);
         }
 
-        .app-header img {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px var(--md-sys-color-shadow));
-        }
-
-        .headline-small {
+        .package-info__item strong {
             font-size: var(--md-typ-title-large);
-            font-weight: 700;
-            line-height: 2rem;
-            letter-spacing: -0.02em;
+            color: var(--md-sys-color-primary);
+            display: block;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: var(--spacing-md);
-            margin-top: calc(var(--spacing-lg) + 72px);
-        }
-
-        .page {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-            width: 100%;
-        }
-
-        .card {
-            background-color: var(--md-sys-color-surface-container-low);
-            border-radius: var(--md-sys-shape-corner-medium);
-            padding: var(--spacing-lg);
-            box-shadow: var(--md-sys-elevation-1);
-            width: 100%;
-            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
-        }
-
-        .card h2 {
-            font-size: var(--md-typ-headline-medium);
-            font-weight: 700;
-            color: var(--md-sys-color-on-surface);
-            text-align: center;
-            margin-bottom: var(--spacing-md);
-            letter-spacing: -0.02em;
-        }
-
-        .card p {
+        .package-info__item p {
+            margin: 0;
             font-size: var(--md-typ-body-medium);
             color: var(--md-sys-color-on-surface);
-            margin-bottom: var(--spacing-md);
         }
 
         .btn {
@@ -524,12 +299,17 @@
 
         <div class="card">
             <h2 class="headline-medium">Detail Paket: {{ package_title | default('Tidak Diketahui') }}</h2>
-            <div id="package-details-content">
+            <div id="package-details-content" class="package-info">
                 <p><strong>Harga:</strong> Rp <span id="formatted-price">{{ package_price | default(0) }}</span></p>
-                <p><strong>Detail:</strong><br>{{ package_detail | safe }}</p>
-                <p><strong>Manfaat:</strong><br>{{ package_benefits }}</p>
+                <div class="package-info__item">
+                    <strong>Detail</strong>
+                    <p>{{ package_detail | safe }}</p>
+                </div>
+                <div class="package-info__item">
+                    <strong>Manfaat</strong>
+                    <p>{{ package_benefits }}</p>
+                </div>
             </div>
-            <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
         </div>
     </main>
 
@@ -555,33 +335,6 @@
             if (priceElement) {
                 const rawPrice = priceElement.textContent;
                 priceElement.textContent = formatPrice(rawPrice);
-            }
-
-            // Event listener untuk tombol (tetap sama)
-            const buttons = document.querySelectorAll('.btn, .btn-outlined');
-          /  buttons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showProgressBar(button);
-                });
-            });
-        });
-
-        function showProgressBar(element) {
-            element.style.pointerEvents = 'none';
-            const overlay = document.createElement('div');
-            overlay.className = 'progress-bar-overlay active';
-            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
-            document.body.appendChild(overlay);
-            if (element.tagName === 'A' && element.href) {
-                window.location.href = element.href;
-            }
-        }
-
-        window.addEventListener('beforeunload', () => {
-            const overlay = document.querySelector('.progress-bar-overlay.active');
-            if (overlay) {
-                overlay.style.display = 'block';
             }
         });
     </script>
