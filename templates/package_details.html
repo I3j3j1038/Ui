@@ -128,7 +128,7 @@
             margin-bottom: var(--spacing-md);
         }
 
-        /* New styles for detail and benefits sections */
+        /* Enhanced styles for detail and benefits sections */
         .package-info {
             display: flex;
             flex-direction: column;
@@ -140,6 +140,11 @@
             padding: var(--spacing-md);
             border-radius: var(--md-sys-shape-corner-small);
             box-shadow: var(--md-sys-elevation-1);
+            transition: transform 0.2s ease;
+        }
+
+        .package-info__item:hover {
+            transform: translateY(-2px);
         }
 
         .package-info__item strong {
@@ -147,76 +152,33 @@
             color: var(--md-sys-color-primary);
             display: block;
             margin-bottom: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .package-info__item p {
             margin: 0;
             font-size: var(--md-typ-body-medium);
             color: var(--md-sys-color-on-surface);
+            line-height: 1.6;
+            padding-left: var(--spacing-sm);
+            list-style-type: disc;
         }
 
-        .btn {
-            position: relative;
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--md-sys-shape-corner-large);
-            font-size: var(--md-typ-label-large);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            text-align: center;
-            width: 100%;
-            overflow: hidden;
-            min-height: 48px;
-            display: flex;
-            margin-top: 10px;
-            align-items: center;
-            justify-content: center;
-            text-transform: uppercase;
-            text-decoration: none;
+        .package-info__item ul {
+            padding-left: var(--spacing-lg);
+            margin: 0;
         }
 
-        .btn-outlined {
-            background: transparent;
-            color: var(--md-sys-color-primary);
-            border: 2px solid var(--md-sys-color-primary);
-            box-shadow: none;
+        .package-info__item ul li {
+            margin-bottom: var(--spacing-sm);
         }
 
-        .btn-outlined:hover {
-            background: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
-            transform: scale(1.02);
-        }
-
-        .btn-outlined:active {
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            transform: scale(0.98);
-        }
-
-        .warning-message {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
-            background: #fee2e2;
-            border-radius: var(--md-sys-shape-corner-small);
-            border-left: 4px solid #dc2626;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .success-message {
-            background: var(--md-sys-color-secondary-container);
-            border-left: 4px solid var(--md-sys-color-secondary);
-        }
-
-        .warning-icon {
-            font-weight: 700;
-            color: #dc2626;
-        }
-
-        .success-message .warning-icon {
+        .price {
+            font-size: var(--md-typ-title-large);
             color: var(--md-sys-color-secondary);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
         }
 
         @media (min-width: 768px) {
@@ -253,27 +215,11 @@
                 padding: var(--spacing-sm);
                 margin-top: calc(var(--spacing-sm) + 56px);
             }
-
-            .btn {
-                padding: var(--spacing-sm) var(--spacing-md);
-                font-size: var(--md-typ-label-large);
-                min-height: 48px;
-            }
-
-            .progress-bar-overlay {
-                top: calc(56px + 5px);
-                max-width: 90%;
-            }
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes progress {
-            0% { width: 0; }
-            100% { width: 100%; }
         }
     </style>
 </head>
@@ -298,16 +244,22 @@
         {% endwith %}
 
         <div class="card">
-            <h2 class="headline-medium">Detail Paket: {{ package_title | default('Tidak Diketahui') }}</h2>
+            <h2 class="headline-medium">Detail Paket: {{ package_title | default('Bundling Bundling 60GB Setahun') }}</h2>
+            <div class="price">Harga: Rp <span id="formatted-price">{{ package_price | default(0) }}</span></div>
             <div id="package-details-content" class="package-info">
-                <p><strong>Harga:</strong> Rp <span id="formatted-price">{{ package_price | default(0) }}</span></p>
                 <div class="package-info__item">
-                    <strong>Detail</strong>
-                    <p>{{ package_detail | safe }}</p>
+                    <p><strong>Detail:</strong>
+                    <ul>
+                        <li>{{ package_detail | safe }}.</li>
+                   
+                    </ul>
                 </div>
                 <div class="package-info__item">
-                    <strong>Manfaat</strong>
-                    <p>{{ package_benefits }}</p>
+                    <p><strong>Manfaat:</strong>
+                    <ul>
+                        <li>{{ package_benefits }}</li>
+
+                    </ul>
                 </div>
             </div>
         </div>
@@ -340,3 +292,6 @@
     </script>
 </body>
 </html>
+
+
+                
