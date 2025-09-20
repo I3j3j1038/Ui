@@ -822,6 +822,7 @@
 
         // Toggle amount, wallet inputs, payment method, and detail button visibility
         function toggleAmountInput() {
+            console.log('toggleAmountInput called'); // Debug log
             const packageSelect = document.getElementById('package');
             const paymentMethodGroup = document.getElementById('payment-method-group');
             const paymentMethod = document.getElementById('payment_method');
@@ -829,12 +830,17 @@
             const walletInput = document.getElementById('wallet-input');
             const detailButton = document.getElementById('package-detail-btn');
 
+            if (!packageSelect || !detailButton) {
+                console.error('packageSelect or detailButton not found');
+                return; // Exit if elements are not found
+            }
+
             if (packageSelect.value) {
                 paymentMethodGroup.classList.remove('hidden');
                 // Show and update the Detail button
                 detailButton.classList.remove('hidden');
-                detailButton.href = `/package_details/${packageSelect.value}`; // Dynamically set href based on selected package code
-                detailButton.textContent = `Detail ${packageSelect.options[packageSelect.selectedIndex].text.split(' - ')[0]}`; // Show package name
+                detailButton.href = `/package_details/${packageSelect.value}`; // Updated for <code> parameter
+                detailButton.textContent = `Detail ${packageSelect.options[packageSelect.selectedIndex].text.split(' - ')[0]}`;
             } else {
                 paymentMethodGroup.classList.add('hidden');
                 paymentMethod.value = '';
@@ -892,7 +898,7 @@
                 });
             });
 
-            toggleAmountInput();
+            toggleAmountInput(); // Initial call
         });
 
         window.addEventListener('beforeunload', () => {
