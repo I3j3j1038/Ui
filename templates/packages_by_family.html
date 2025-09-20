@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Paket Keluarga' if family_packages else 'Paket Enterprise' }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* CSS tetap sama seperti yang Anda berikan */
+        :root {
+            --md-sys-color-primary: #1e3a8a;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d0e7ff;
+            --md-sys-color-on-primary-container: #0f1e5e;
+            --md-sys-color-secondary: #10b981;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #a7f3d0;
+            --md-sys-color-on-secondary-container: #064e3b;
+            --md-sys-color-surface: #f0f7ff;
+            --md-sys-color-surface-container-low: #f8fafc;
+            --md-sys-color-on-surface: #1e293b;
+            --md-sys-color-on-surface-variant: #64748b;
+            --md-sys-color-outline: #e2e8f0;
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+            --md-typ-display-large: 3.5rem;
+            --md-typ-headline-medium: 2rem;
+            --md-typ-title-large: 1.5rem;
+            --md-typ-body-medium: 1rem;
+            --md-typ-label-large: 0.875rem;
+            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px var(--md-sys-color-shadow));
+        }
+
+        .headline-small {
+            font-size: var(--md-typ-title-large);
+            font-weight: 700;
+            line-height: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-on-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            min-height: 48px;
+            min-width: 48px;
+        }
+
+        .btn-icon:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .btn-icon:active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            transform: scale(0.98);
+        }
+
+        .btn-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-icon:active::after {
+            width: 100px;
+            height: 100px;
+        }
+
+        .btn {
+            position: relative;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-large);
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .btn-filled {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .btn-filled:hover {
+            background: var(--md-sys-color-primary-container);
+            box-shadow: var(--md-sys-elevation-2);
+            transform: scale(1.02);
+        }
+
+        .btn-filled:active {
+            background: var(--md-sys-color-secondary);
+            transform: scale(0.98);
+        }
+
+        .btn-filled::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-filled:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-outlined {
+            background: transparent;
+            color: var(--md-sys-color-primary);
+            border: 2px solid var(--md-sys-color-primary);
+            box-shadow: none;
+        }
+
+        .btn-outlined:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: scale(1.02);
+        }
+
+        .btn-outlined:active {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            transform: scale(0.98);
+        }
+
+        .btn-outlined::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-outlined:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: var(--md-sys-color-primary);
+            padding: var(--spacing-sm);
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .btn-text:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .btn-text:active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .btn-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-text:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .copy-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.75rem;
+            min-height: 24px;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            border: 1px solid var(--md-sys-color-primary);
+            border-radius: var(--md-sys-shape-corner-small);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-primary);
+        }
+
+        .copy-btn i {
+            font-size: 0.75rem;
+            color: var(--md-sys-color-primary);
+        }
+
+        .copy-btn:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .copy-btn:hover i {
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .copy-btn:active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .copy-btn:active i {
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .copy-message-btn {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: var(--spacing-sm);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            margin-top: calc(var(--spacing-lg) + 72px);
+        }
+
+        .page {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            box-shadow: var(--md-sys-elevation-1);
+            width: 100%;
+            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        .card h2 {
+            font-size: var(--md-typ-headline-medium);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.02em;
+        }
+
+        .card p.body-medium {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .label-large {
+            font-size: var(--md-typ-label-large);
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .text-field {
+            padding: 14px var(--spacing-md);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: 16px;
+            background: var(--md-sys-color-surface);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            width: 100%;
+            min-height: 48px;
+        }
+
+        .text-field:focus {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+            outline: none;
+            font-weight: 700;
+        }
+
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select select {
+            width: 100%;
+            padding: 14px var(--spacing-md);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: 16px;
+            background: var(--md-sys-color-surface);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            appearance: none;
+            box-sizing: border-box;
+            min-height: 48px;
+        }
+
+        .custom-select select:focus {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+            outline: none;
+            font-weight: 700;
+        }
+
+        .custom-select::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--md-sys-color-on-surface-variant);
+            pointer-events: none;
+        }
+
+        .payment-logo-container {
+            margin-top: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .payment-logo-container img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: var(--md-sys-shape-corner-small);
+        }
+
+        .payment-logo-container span {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: var(--spacing-md);
+        }
+
+        .btn-filled.hidden {
+            display: none;
+        }
+
+        .input-group.payment-method.hidden {
+            display: none;
+        }
+
+        .warning-message {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: #fee2e2;
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid #dc2626;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .success-message {
+            background: var(--md-sys-color-secondary-container);
+            border-left: 4px solid var(--md-sys-color-secondary);
+        }
+
+        .warning-icon {
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .success-message .warning-icon {
+            color: var(--md-sys-color-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        .progress-bar-overlay {
+            position: fixed;
+            top: 72px;
+            margin-top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            z-index: 2000;
+        }
+
+        .progress-bar-overlay.active {
+            display: block;
+        }
+
+        .progress-bar-overlay .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: var(--spacing-lg);
+                margin-top: calc(var(--spacing-lg) + 72px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .app-header {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .app-header img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .headline-small {
+                font-size: var(--md-typ-body-medium);
+                font-weight: 700;
+            }
+
+            .card {
+                padding: var(--spacing-md);
+            }
+
+            .card h2 {
+                font-size: 1.25rem;
+            }
+
+            .container {
+                padding: var(--spacing-sm);
+                margin-top: calc(var(--spacing-sm) + 56px);
+            }
+
+            .btn {
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: var(--md-typ-label-large);
+                min-height: 48px;
+            }
+
+            .btn-icon {
+                font-size: 1.25rem;
+                min-height: 40px;
+                min-width: 40px;
+            }
+
+            .text-field, .custom-select select {
+                padding: 14px var(--spacing-md);
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .progress-bar-overlay {
+                top: 56px;
+                margin-top: 5px;
+                max-width: 90%;
+            }
+
+            .copy-btn {
+                font-size: 0.65rem;
+                min-height: 20px;
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .copy-btn i {
+                font-size: 0.65rem;
+            }
+
+            .payment-logo-container img {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        @media (hover: none) and (max-width: 600px) {
+            body {
+                font-weight: 400;
+                text-rendering: optimizeSpeed;
+            }
+
+            .text-field, .custom-select select, .btn, .btn-text {
+                font-weight: 500;
+            }
+
+            .text-field:focus, .custom-select select:focus {
+                font-weight: 700;
+            }
+
+            .btn-filled:active {
+                background: var(--md-sys-color-secondary);
+                transform: scale(0.98);
+            }
+
+            .btn-outlined:active {
+                background: var(--md-sys-color-primary);
+                color: var(--md-sys-color-on-primary);
+                transform: scale(0.98);
+            }
+
+            .btn-text:active {
+                background: var(--md-sys-color-secondary-container);
+                color: var(--md-sys-color-on-secondary-container);
+            }
+
+            .btn-icon:active {
+                background: var(--md-sys-color-secondary-container);
+                color: var(--md-sys-color-on-secondary-container);
+                transform: scale(0.98);
+            }
+
+            .copy-btn:active {
+                background: var(--md-sys-color-secondary-container);
+                color: var(--md-sys-color-on-secondary-container);
+            }
+
+            .copy-btn:active i {
+                color: var(--md-sys-color-on-secondary-container);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DOR XL Logo" onerror="this.src='https://via.placeholder.com/48'; this.alt='Logo Placeholder'; console.error('Failed to load logo:', this.src);">
+        <h1 class="headline-small">DOR XL</h1>
+    </header>
+
+    <!-- Content -->
+    <div class="container">
+        <main id="content" class="page">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="warning-message {{ 'success-message' if category == 'success' else 'error-message' }} visible">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <span class="warning-icon">!</span>
+                                <p>{{ message }}</p>
+                            </div>
+                            {% if category == 'success' %}
+                                <div class="copy-message-btn">
+                                    <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ message }}', this)">
+                                        <i class="fas fa-copy"></i> Salin
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card">
+                <h2>{{ 'Beli Paket Keluarga' if family_packages else 'Beli Paket Enterprise' }}</h2>
+                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                <form method="POST" action="{{ url_for('family_packages' if family_packages else 'enterprise_packages') }}" id="search-form" {% if packages is defined and packages %}style="display: none;"{% else %}style="display: block;"{% endif %}>
+                    <div class="input-group">
+                        <label for="family_code" class="label-large">Masukkan Kode Keluarga</label>
+                        <input type="text" name="family_code" id="family_code" class="text-field" placeholder="e.g., XTRA_COMBO" value="{{ family_code|default('') }}" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-filled">Cari Paket</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                    </div>
+                </form>
+                {% if packages is defined and packages %}
+                    <form method="POST" action="{{ url_for('purchase') }}" id="purchase-form" style="display: block;">
+                        <input type="hidden" name="payment_for" value="BUY_PACKAGE">
+                        <div class="input-group">
+                            <label for="package" class="label-large">Pilih Paket</label>
+                            <div class="custom-select">
+                                <select name="package_code" id="package" onchange="toggleAmountInput()" required>
+                                    <option value="">Pilih paket</option>
+                                    {% for pkg in packages %}
+                                        <option value="{{ pkg.code }}" data-price="{{ pkg.price }}">{{ pkg.name }} - Rp {{ '{:,}'.format(pkg.price) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if not packages %}
+                                <p class="body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-top: var(--spacing-sm);">Tidak ada paket tersedia saat ini.</p>
+                            {% else %}
+                                <!-- Tambahkan daftar paket dengan tombol Detail -->
+                                <ul class="list-container" style="margin-top: var(--spacing-md);">
+                                    {% for pkg in packages %}
+                                        <li style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span>{{ pkg.name }} - Rp {{ '{:,}'.format(pkg.price) }}</span>
+                                            <a href="{{ url_for('package_details', code=pkg.code) }}" class="btn btn-text">Detail</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                        <div class="input-group payment-method hidden" id="payment-method-group">
+                            <label for="payment_method" class="label-large">Metode Pembayaran</label>
+                            <div class="custom-select">
+                                <select name="payment_method" id="payment_method" onchange="toggleAmountInput(); updatePaymentLogo();" required>
+                                    <option value="">Pilih metode</option>
+                                    <option value="BALANCE" data-logo="{{ url_for('static', filename='images/logo.png') }}">Saldo</option>
+                                    <option value="DANA" data-logo="{{ url_for('static', filename='images/dana.png') }}">DANA</option>
+                                    <option value="OVO" data-logo="{{ url_for('static', filename='images/ovo.png') }}">OVO</option>
+                                    <option value="GOPAY" data-logo="{{ url_for('static', filename='images/gopay.png') }}">GOPAY</option>
+                                    <option value="SHOPEEPAY" data-logo="{{ url_for('static', filename='images/shopeepay.png') }}">SHOPEEPAY</option>
+                                    <option value="QRIS" data-logo="{{ url_for('static', filename='images/qris.png') }}">QRIS</option>
+                                </select>
+                            </div>
+                            <div class="payment-logo-container" id="payment-logo-container" style="display: none;">
+                                <img id="payment-logo" src="" alt="Payment Logo" onerror="this.src='https://via.placeholder.com/32'; this.alt='Payment Logo Placeholder'; console.error('Failed to load payment logo:', this.src);">
+                                <span id="payment-logo-text"></span>
+                            </div>
+                        </div>
+                        <div id="amount-input" style="display: none;" class="input-group">
+                            <label for="amount" class="label-large">Jumlah Pembayaran</label>
+                            <input type="number" name="amount" id="amount" class="text-field" placeholder="Masukkan jumlah" min="0">
+                        </div>
+                        <div id="wallet-input" style="display: none;" class="input-group">
+                            <label for="wallet_number" class="label-large">Nomor Wallet</label>
+                            <input type="text" name="wallet_number" id="wallet_number" class="text-field" placeholder="Masukkan nomor wallet">
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-filled hidden" id="buy-button">Beli Sekarang</button>
+                            <button type="button" class="btn btn-outlined" onclick="showSearchForm()">Kembali</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Clean package names by removing redundant words
+        function cleanPackageName(name) {
+            const priceMatch = name.match(/ - Rp [\d,]+$/);
+            const pricePart = priceMatch ? priceMatch[0] : '';
+            const namePart = priceMatch ? name.replace(pricePart, '') : name;
+            const words = namePart.split(' ');
+            const uniqueWords = [];
+            words.forEach(word => {
+                if (!uniqueWords.includes(word) || !/^(Special|For|You)$/i.test(word)) {
+                    uniqueWords.push(word);
+                }
+            });
+            return `${uniqueWords.join(' ')}${pricePart}`;
+        }
+
+        // Show progress bar for button clicks
+        function showProgressBar(element) {
+            if (element.classList.contains('copy-btn')) {
+                return; // Skip copy buttons
+            }
+            element.style.pointerEvents = 'none';
+            const overlay = document.createElement('div');
+            overlay.className = 'progress-bar-overlay active';
+            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
+            document.body.appendChild(overlay);
+
+            if (element.tagName === 'BUTTON' && element.type === 'submit') {
+                const form = element.closest('form');
+                if (form) {
+                    form.submit();
+                }
+            } else if (element.tagName === 'A' && element.href) {
+                window.location.href = element.href;
+            }
+        }
+
+        // Copy text to clipboard
+        function copyToClipboard(text, button) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            } else {
+                const tempInput = document.createElement('input');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
+                    }, 1500);
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                }
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        // Update payment method logo and toggle buy button
+        function updatePaymentLogo() {
+            const paymentSelect = document.getElementById('payment_method');
+            const paymentLogoContainer = document.getElementById('payment-logo-container');
+            const paymentLogo = document.getElementById('payment-logo');
+            const paymentLogoText = document.getElementById('payment-logo-text');
+            const buyButton = document.getElementById('buy-button');
+            const selectedOption = paymentSelect.options[paymentSelect.selectedIndex];
+
+            if (selectedOption.value && selectedOption.dataset.logo) {
+                paymentLogo.src = selectedOption.dataset.logo;
+                paymentLogo.alt = `${selectedOption.textContent} Logo`;
+                paymentLogoText.textContent = selectedOption.textContent;
+                paymentLogoContainer.style.display = 'flex';
+                buyButton.classList.remove('hidden');
+            } else {
+                paymentLogoContainer.style.display = 'none';
+                buyButton.classList.add('hidden');
+            }
+        }
+
+        // Toggle amount, wallet inputs, and payment method visibility
+        function toggleAmountInput() {
+            const packageSelect = document.getElementById('package');
+            const paymentMethodGroup = document.getElementById('payment-method-group');
+            const paymentMethod = document.getElementById('payment_method');
+            const amountInput = document.getElementById('amount-input');
+            const walletInput = document.getElementById('wallet-input');
+
+            if (packageSelect.value) {
+                paymentMethodGroup.classList.remove('hidden');
+            } else {
+                paymentMethodGroup.classList.add('hidden');
+                paymentMethod.value = '';
+                updatePaymentLogo();
+            }
+
+            if (['DANA', 'OVO', 'GOPAY', 'SHOPEEPAY'].includes(paymentMethod.value)) {
+                walletInput.style.display = 'block';
+            } else {
+                walletInput.style.display = 'none';
+            }
+
+            const selectedPackage = packageSelect.options[packageSelect.selectedIndex];
+            if (selectedPackage && parseInt(selectedPackage.dataset.price) === 0) {
+                amountInput.style.display = 'block';
+            } else {
+                amountInput.style.display = 'none';
+            }
+
+            updatePaymentLogo();
+        }
+
+        // Show search form and hide purchase form
+        function showSearchForm() {
+            const searchForm = document.getElementById('search-form');
+            const purchaseForm = document.getElementById('purchase-form');
+            if (searchForm && purchaseForm) {
+                searchForm.style.display = 'block';
+                purchaseForm.style.display = 'none';
+                document.getElementById('family_code').value = ''; // Reset input kode keluarga
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const packageSelect = document.getElementById('package');
+            if (packageSelect) {
+                const options = packageSelect.querySelectorAll('option:not([value=""])');
+                options.forEach(option => {
+                    option.textContent = cleanPackageName(option.textContent);
+                });
+            }
+
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                bar.style.display = 'block';
+                setTimeout(() => {
+                    bar.style.display = 'none';
+                }, 1500);
+            });
+
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => card.classList.add('visible'));
+
+            const buttons = document.querySelectorAll('.btn-filled, .btn-outlined, .btn-text');
+            buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    if (!button.classList.contains('btn-outlined') || button.getAttribute('onclick') !== 'showSearchForm()') {
+                        e.preventDefault();
+                        showProgressBar(button);
+                    }
+                });
+            });
+
+            toggleAmountInput();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            const overlay = document.querySelector('.progress-bar-overlay.active');
+            if (overlay) {
+                overlay.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
