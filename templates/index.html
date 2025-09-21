@@ -625,17 +625,17 @@
 
     <!-- Content -->
     <main id="content" class="page container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="warning-message {{ 'success-message' if category == 'success' else 'error-message' }}">
-                        <span class="warning-icon">!</span>
-                        <p>{{ message }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
+                    <span class="warning-icon">!</span>
+                    <p>{{ message.message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
 
+        <!-- Request Phone Number -->
         {% if request_phone %}
             <div class="card">
                 <h2 class="headline-medium">Tambah Nomor Telepon</h2>
@@ -650,6 +650,7 @@
                 </form>
             </div>
 
+        <!-- Switch Account -->
         {% elif switch_account %}
             <div class="card">
                 <h2 class="headline-medium">Akun Tersimpan</h2>
@@ -685,6 +686,7 @@
                 </form>
             </div>
 
+        <!-- Verify OTP -->
         {% elif verify_otp %}
             <div class="card">
                 <h2 class="headline-medium">Verifikasi OTP</h2>
@@ -692,12 +694,14 @@
                 <form method="POST" action="{{ url_for('verify_otp') }}">
                     <div class="input-group">
                         <label for="otp" class="label-large">Masukkan kode OTP 6 digit</label>
-                        <input type="text" name="otp" id="otp" class="text-field" required>
+                        <input type="text" name="otp" id="otp" class="text-field" placeholder="123456" required>
                     </div>
                     <button type="submit" class="btn btn-filled">Verifikasi</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
                 </form>
             </div>
 
+        <!-- My Packages -->
         {% elif my_packages %}
             <div class="card">
                 <h2 class="headline-medium">Paket Saya</h2>
@@ -706,23 +710,16 @@
                     <p class="body-medium">Tidak ada paket aktif.</p>
                 {% else %}
                     <ul class="list-container">
-                        {% for pkg in packages %}
+                        {% for package in packages %}
                             <li>
-                                <strong>{{ pkg.name|default('Unknown') }}</strong>
-                                <div class="code-column">
-                                    <div class="code-item">
-                                        <span>Kode Kuota: {{ pkg.quota_code|default('N/A') }}</span>
-                                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ pkg.quota_code|default('N/A') }}', this)" {% if pkg.quota_code|default('N/A') == 'N/A' %}disabled{% endif %}><i class="fas fa-copy"></i> Salin</button>
-                                    </div>
-                                    <div class="code-item">
-                                        <span>Kode Keluarga: {{ pkg.family_code|default('N/A') }}</span>
-                                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ pkg.family_code|default('N/A') }}', this)" {% if pkg.family_code|default('N/A') == 'N/A' %}disabled{% endif %}><i class="fas fa-copy"></i> Salin</button>
-                                    </div>
-                                    <div class="code-item">
-                                        <span>Kode Grup: {{ pkg.group_code|default('N/A') }}</span>
-                                        <button class="btn btn-text copy-btn" onclick="copyToClipboard('{{ pkg.group_code|default('N/A') }}', this)" {% if pkg.group_code|default('N/A') == 'N/A' %}disabled{% endif %}><i class="fas fa-copy"></i> Salin</button>
-                                    </div>
-                                </div>
+                                <strong>{{ package.name }}</strong>
+                                <p class="body-medium">
+                                    Kode: {{ package.package_option_code }}<br>
+                                    Harga: Rp {{ package.price|int|format_number }}<br>
+                                    Mulai: {{ package.created_at }}<br>
+                                    Berakhir: {{ package.expired_at }}
+                                </p>
+                                <a href="{{ url_for('package_details', code=package.package_option_code) }}" class="btn btn-outlined">Detail</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -730,154 +727,71 @@
                 <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
             </div>
 
+        <!-- Main Dashboard -->
         {% else %}
-            <div class="card account-info">
+            <div class="account-info">
                 <h2 class="headline-medium">Informasi Akun</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <p class="body-medium"><strong>👤 User ID:</strong> {{ user_id }}</p>
-                <p class="body-medium"><strong>📱 Nomor:</strong> {{ phone_number }}</p>
-                <p class="body-medium"><strong>💰 Pulsa:</strong> Rp {{ '{:,}'.format(remaining_balance) }}</p>
-                <p class="body-medium"><strong>📅 Masa aktif:</strong> {{ expired_at }}</p>
+                <p class="body-medium">
+                    Nomor: {{ phone_number }}<br>
+                    Sisa Kuota: {{ remaining_balance|int|format_number }} MB<br>
+                    Berlaku Hingga: {{ expired_at }}
+                </p>
+                <a href="{{ url_for('switch_account') }}" class="btn btn-outlined">Ganti Akun</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-outlined">Logout</a>
             </div>
 
-            <div class="card main-menu">
-                <h2 class="headline-medium">Main Menu</h2>
+            <div class="main-menu">
+                <h2 class="headline-medium">Menu Utama</h2>
                 <div class="grid-menu">
-                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('switch_account') }}')">
-                        <div class="grid-icon"><i class="fas fa-key"></i></div>
-                        <div class="grid-title">Ganti Akun</div>
-                        <div class="grid-description">Login atau ganti nomor telepon</div>
-                    </div>
-                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('my_packages') }}')">
-                        <div class="grid-icon"><i class="fas fa-list"></i></div>
+                    <a href="{{ url_for('my_packages') }}" class="grid-item">
+                        <div class="grid-icon"><i class="fas fa-box"></i></div>
                         <div class="grid-title">Paket Saya</div>
                         <div class="grid-description">Lihat paket aktif Anda</div>
-                    </div>
-                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('buy_package') }}')">
-                        <div class="grid-icon"><i class="fas fa-cube"></i></div>
-                        <div class="grid-title">Beli Paket XUT</div>
-                        <div class="grid-description">Pilih dan beli paket XUT</div>
-                    </div>
-                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('family_packages') }}')">
+                    </a>
+                    <a href="{{ url_for('buy_package') }}" class="grid-item">
+                        <div class="grid-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="grid-title">Beli Paket</div>
+                        <div class="grid-description">Beli paket baru</div>
+                    </a>
+                    <a href="{{ url_for('family_packages') }}" class="grid-item">
                         <div class="grid-icon"><i class="fas fa-users"></i></div>
                         <div class="grid-title">Paket Keluarga</div>
-                        <div class="grid-description">Beli berdasarkan family code</div>
-                    </div>
-                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('enterprise_packages') }}')">
-                        <div class="grid-icon"><i class="fas fa-building"></i></div>
+                        <div class="grid-description">Paket untuk keluarga</div>
+                    </a>
+                    <a href="{{ url_for('enterprise_packages') }}" class="grid-item">
+                        <div class="grid-icon"><i class="fas fa-briefcase"></i></div>
                         <div class="grid-title">Paket Enterprise</div>
-                        <div class="grid-description">Paket untuk kebutuhan bisnis</div>
-                    </div>
-                    <div class="grid-item" onclick="showLoadingAnimation(this, '{{ url_for('logout') }}')">
-                        <div class="grid-icon"><i class="fas fa-sign-out-alt"></i></div>
-                        <div class="grid-title">Logout</div>
-                        <div class="grid-description">Keluar dari akun Anda</div>
-                    </div>
+                        <div class="grid-description">Paket untuk bisnis</div>
+                    </a>
                 </div>
             </div>
         {% endif %}
     </main>
 
     <script>
-        function showLoadingAnimation(element, url) {
-            element.style.pointerEvents = 'none';
-            const overlay = document.createElement('div');
-            overlay.className = 'progress-bar-overlay active';
-            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
-            document.body.appendChild(overlay);
-            window.location.href = url;
-        }
-
-        function showProgressBar(element) {
-            if (element.classList.contains('copy-btn')) {
-                return;
-            }
-            element.style.pointerEvents = 'none';
-            const overlay = document.createElement('div');
-            overlay.className = 'progress-bar-overlay active';
-            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
-            document.body.appendChild(overlay);
-
-            if (element.tagName === 'BUTTON' && element.type === 'submit') {
-                const form = element.closest('form');
-                if (form) {
-                    form.submit();
-                }
-            } else if (element.tagName === 'A' && element.href) {
-                window.location.href = element.href;
-            }
-        }
-
-        function copyToClipboard(text, button) {
-            if (text === 'N/A') return;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(() => {
-                    button.innerHTML = '<i class="fas fa-copy"></i> Copied!';
-                    setTimeout(() => {
-                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
-                    }, 1500);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                });
-            } else {
-                const tempInput = document.createElement('input');
-                tempInput.value = text;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                try {
-                    document.execCommand('copy');
-                    button.innerHTML = '<i class="fas fa-copy"></i> Copied!';
-                    setTimeout(() => {
-                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
-                    }, 1500);
-                } catch (err) {
-                    console.error('Fallback copy failed: ', err);
-                }
-                document.body.removeChild(tempInput);
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            const buttons = document.querySelectorAll('.btn, .btn-filled, .btn-outlined, .btn-text');
-            buttons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    if (!button.classList.contains('copy-btn')) {
-                        e.preventDefault();
-                        showProgressBar(button);
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.warning-message, .success-message');
+            messages.forEach((msg, index) => {
+                msg.style.animationDelay = `${index * 0.2}s`;
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+
+            // Handle form submission with progress bar
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', () => {
+                    const progressBar = form.closest('.card')?.querySelector('.progress-bar') || document.querySelector('.progress-bar-overlay');
+                    if (progressBar) {
+                        progressBar.style.display = 'block';
                     }
                 });
             });
-
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                bar.style.display = 'block';
-                setTimeout(() => {
-                    bar.style.display = 'none';
-                }, 1500);
-            });
-
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => card.classList.add('visible'));
-
-            // Auto-remove flash messages with fade-out animation
-            const messages = document.querySelectorAll('.warning-message, .success-message');
-            messages.forEach(message => {
-                setTimeout(() => {
-                    message.classList.add('fade-out');
-                    setTimeout(() => {
-                        message.remove();
-                    }, 500); // Match the fadeOut animation duration
-                }, 5000); // Messages disappear after 5 seconds
-            });
-        });
-
-        window.addEventListener('beforeunload', () => {
-            const overlay = document.querySelector('.progress-bar-overlay.active');
-            if (overlay) {
-                overlay.style.display = 'block';
-            }
         });
     </script>
 </body>
 </html>
-
