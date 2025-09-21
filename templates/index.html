@@ -536,33 +536,7 @@
                     <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
                 </form>
             </div>
-
-        <!-- My Packages (Removed from Menu but kept as a page) -->
-        {% elif my_packages %}
-            <div class="card">
-                <h2 class="headline-medium">Paket Saya</h2>
-                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                {% if packages|length == 0 %}
-                    <p class="body-medium">Tidak ada paket aktif.</p>
-                {% else %}
-                    <ul class="list-container">
-                        {% for package in packages %}
-                            <li>
-                                <strong>{{ package.name }}</strong>
-                                <p class="body-medium">
-                                    Kode: {{ package.package_option_code }}<br>
-                                    Harga: Rp {{ package.price|int|format_number }}<br>
-                                    Mulai: {{ package.created_at }}<br>
-                                    Berakhir: {{ package.expired_at }}
-                                </p>
-                                <a href="{{ url_for('package_details', code=package.package_option_code) }}" class="btn btn-outlined">Detail</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
-            </div>
-
+        
         <!-- Main Dashboard -->
         {% else %}
             <div class="account-info">
@@ -570,9 +544,10 @@
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
                 <div class="account-details">
                     <p class="body-medium">
-                        Nomor: {{ phone_number }}<br>
-                        Sisa Pulsa: Rp {{ remaining_balance|int }}<br>
-                        Berlaku Hingga: {{ expired_at }}
+                        <strong>📱 Nomor:</strong> {{ phone_number }}<br>
+                        <strong>💰 Pulsa:</strong> {{ remaining_balance|int }}<br>
+                        <strong>📅 Masa aktif:</strong>{{ expired_at }}<br>
+                        <strong>👤 User ID:</strong> {{ user_id }}
                     </p>
                 </div>
                 <div class="toggle-visibility" onclick="toggleAccountDetails()">
