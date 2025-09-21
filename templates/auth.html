@@ -326,47 +326,58 @@
             color: var(--md-sys-color-secondary);
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--md-sys-color-outline);
-            border-radius: var(--md-sys-shape-corner-small);
-            overflow: hidden;
-            display: none;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .progress-bar-fill {
-            width: 100%;
-            height: 100%;
-            background: var(--md-sys-color-primary);
-            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
-        }
-
-        .progress-bar-overlay {
+        /* Circular Progress Bar */
+        .circular-progress-overlay {
             position: fixed;
-            top: calc(72px + 5px);
+            top: calc(72px + 10px);
             left: 50%;
             transform: translateX(-50%);
-            width: 100%;
-            max-width: 800px;
-            height: 4px;
-            background: var(--md-sys-color-outline);
-            border-radius: var(--md-sys-shape-corner-small);
-            overflow: hidden;
+            width: 60px;
+            height: 60px;
             display: none;
             z-index: 2000;
         }
 
-        .progress-bar-overlay.active {
+        .circular-progress-overlay.active {
             display: block;
         }
 
-        .progress-bar-overlay .progress-bar-fill {
+        .circular-progress {
             width: 100%;
             height: 100%;
-            background: var(--md-sys-color-primary);
-            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress-bg {
+            fill: none;
+            stroke: var(--md-sys-color-outline);
+            stroke-width: 5;
+        }
+
+        .circular-progress-fill {
+            fill: none;
+            stroke: var(--md-sys-color-primary);
+            stroke-width: 5;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            animation: circular-progress 1.5s ease-in-out infinite;
+        }
+
+        @keyframes circular-progress {
+            0% {
+                stroke-dashoffset: 283;
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: 283;
+            }
+        }
+
+        /* Hide the old linear progress bar */
+        .progress-bar-overlay {
+            display: none !important;
         }
 
         @keyframes fadeIn {
@@ -382,11 +393,6 @@
         @keyframes fadeOut {
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(20px); height: 0; padding: 0; margin: 0; }
-        }
-
-        @keyframes progress {
-            0% { width: 0; }
-            100% { width: 100%; }
         }
 
         @media (min-width: 768px) {
@@ -436,9 +442,10 @@
                 min-height: 48px;
             }
 
-            .progress-bar-overlay {
-                top: calc(56px + 5px);
-                max-width: 90%;
+            .circular-progress-overlay {
+                top: calc(56px + 10px);
+                width: 48px;
+                height: 48px;
             }
         }
 
@@ -496,9 +503,12 @@
     </style>
 </head>
 <body>
-    <!-- Progress Bar Overlay -->
-    <div class="progress-bar-overlay" id="progress-bar-overlay">
-        <div class="progress-bar-fill"></div>
+    <!-- Circular Progress Bar Overlay -->
+    <div class="circular-progress-overlay" id="circular-progress-overlay">
+        <svg class="circular-progress" viewBox="0 0 100 100">
+            <circle class="circular-progress-bg" cx="50" cy="50" r="45"/>
+            <circle class="circular-progress-fill" cx="50" cy="50" r="45"/>
+        </svg>
     </div>
 
     <!-- Header -->
@@ -510,7 +520,7 @@
     <!-- Content -->
     <main id="content" class="page container">
         <div class="card">
-            <!-- Updated message rendering to use 'messages' variable -->
+            <!-- Message rendering using 'messages' variable -->
             {% if messages %}
                 {% for message in messages %}
                     <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
@@ -581,9 +591,9 @@
             document.getElementById('login').classList.add('visible');
         }
 
-        // Show progress bar for button clicks
-        function showProgressBar(element) {
-            const progressBar = document.getElementById('progress-bar-overlay');
+        // Show circular progress bar for button clicks
+        function showCircularProgress(element) {
+            const progressBar = document.getElementById('circular-progress-overlay');
             progressBar.classList.add('active');
             element.style.pointerEvents = 'none';
 
@@ -608,7 +618,7 @@
             buttons.forEach(button => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showProgressBar(button);
+                    showCircularProgress(button);
                 });
             });
 
@@ -622,10 +632,10 @@
                 }, 5000);
             });
 
-            // Show progress bar if there are error messages on page load
+            // Show circular progress bar if there are error messages on page load
             const errorMessages = document.querySelectorAll('.warning-message');
             if (errorMessages.length > 0) {
-                const progressBar = document.getElementById('progress-bar-overlay');
+                const progressBar = document.getElementById('circular-progress-overlay');
                 progressBar.classList.add('active');
                 setTimeout(() => {
                     progressBar.classList.remove('active');
