@@ -463,45 +463,59 @@
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
         }
 
-        .warning-message {
+        /* Dialog Styles */
+        dialog {
+            border: none;
+            border-radius: var(--md-sys-shape-corner-medium);
+            background: var(--md-sys-color-surface);
+            box-shadow: var(--md-sys-elevation-2);
+            padding: var(--spacing-lg);
+            max-width: 400px;
+            width: 90%;
+            animation: slideInDialog 0.3s ease-in-out forwards;
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+        }
+
+        dialog.error-dialog {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+        }
+
+        dialog.success-dialog {
+            background: var(--md-sys-color-secondary-container);
+            border-left: 4px solid var(--md-sys-color-secondary);
+        }
+
+        dialog.fade-out {
+            animation: fadeOutDialog 0.5s ease-in-out forwards;
+        }
+
+        dialog .dialog-content {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            padding: var(--spacing-md);
-            background: #fee2e2;
-            border-radius: var(--md-sys-shape-corner-small);
-            border-left: 4px solid #dc2626;
-            margin-bottom: var(--spacing-md);
-            justify-content: flex-start;
-            animation: slideIn 0.5s ease-in-out forwards;
-            opacity: 0;
         }
 
-        .success-message {
-            background: var(--md-sys-color-secondary-container);
-            border-left: 4px solid var(--md-sys-color-secondary);
-            justify-content: flex-start;
-            animation: slideIn 0.5s ease-in-out forwards;
-            opacity: 0;
+        dialog .dialog-icon {
+            font-size: 1.5rem;
         }
 
-        .warning-message.fade-out, .success-message.fade-out {
-            animation: fadeOut 0.5s ease-in-out forwards;
-        }
-
-        .warning-message p {
-            flex-grow: 1;
-            font-size: var(--md-typ-body-medium);
-            color: var(--md-sys-color-on-surface);
-        }
-
-        .warning-icon {
-            font-weight: 700;
+        dialog.error-dialog .dialog-icon {
             color: #dc2626;
         }
 
-        .success-message .warning-icon {
+        dialog.success-dialog .dialog-icon {
             color: var(--md-sys-color-secondary);
+        }
+
+        dialog p {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface);
+            flex-grow: 1;
         }
 
         @media (min-width: 768px) {
@@ -535,263 +549,273 @@
             }
 
             .container {
-                padding: var(--spacing-sm);
-                margin-top: calc(var(--spacing-sm) + 56px);
+                padding: var(--spacing遵
+
+                .container {
+                    padding: var(--spacing-sm);
+                    margin-top: calc(var(--spacing-sm) + 56px);
+                }
+
+                .grid-item {
+                    padding: var(--spacing-md);
+                    min-height: 140px;
+                }
+
+                .grid-icon {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.25rem;
+                }
+
+                .grid-title {
+                    font-size: var(--md-typ-label-large);
+                }
+
+                .grid-description {
+                    font-size: 0.75rem;
+                }
+
+                .btn {
+                    padding: var(--spacing-sm) var(--spacing-md);
+                    font-size: var(--md-typ-label-large);
+                    min-height: 48px;
+                }
+
+                .text-field {
+                    padding: 14px var(--spacing-md);
+                    font-size: 16px;
+                    min-height: 48px;
+                }
+
+                .copy-btn {
+                    font-size: 0.65rem;
+                    min-height: 20px;
+                    padding: var(--spacing-xs) var(--spacing-sm);
+                }
+
+                .copy-btn i {
+                    font-size: 0.65rem;
+                }
+
+                .code-item span {
+                    max-width: 150px;
+                    font-size: 0.875rem;
+                }
+
+                .code-column {
+                    max-width: 100%;
+                }
+
+                .progress-bar-overlay {
+                    top: calc(56px + 5px);
+                    max-width: 90%;
+                }
+
+                dialog {
+                    max-width: 300px;
+                    padding: var(--spacing-md);
+                }
             }
 
-            .grid-item {
-                padding: var(--spacing-md);
-                min-height: 140px;
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(16px); }
+                to { opacity: 1; transform: translateY(0); }
             }
 
-            .grid-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 1.25rem;
+            @keyframes slideInDialog {
+                from { opacity: 0; transform: translate(-50%, -20px); }
+                to { opacity: 1; transform: translate(-50%, 0); }
             }
 
-            .grid-title {
-                font-size: var(--md-typ-label-large);
+            @keyframes fadeOutDialog {
+                from { opacity: 1; transform: translate(-50%, 0); }
+                to { opacity: 0; transform: translate(-50%, 20px); }
             }
 
-            .grid-description {
-                font-size: 0.75rem;
+            @keyframes progress {
+                0% { width: 0; }
+                100% { width: 100%; }
             }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <header class="app-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="width: 40px; height: 40px;">
+            <h1 class="headline-small">DOR XL</h1>
+        </header>
 
-            .btn {
-                padding: var(--spacing-sm) var(--spacing-md);
-                font-size: var(--md-typ-label-large);
-                min-height: 48px;
-            }
+        <!-- Content -->
+        <main id="content" class="page container">
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <dialog class="{{ 'success-dialog' if message.category == 'success' else 'error-dialog' }}" open>
+                        <div class="dialog-content">
+                            <i class="fas {{ 'fa-check-circle' if message.category == 'success' else 'fa-exclamation-circle' }} dialog-icon"></i>
+                            <p>{{ message.message }}</p>
+                        </div>
+                    </dialog>
+                {% endfor %}
+            {% endif %}
 
-            .text-field {
-                padding: 14px var(--spacing-md);
-                font-size: 16px;
-                min-height: 48px;
-            }
-
-            .copy-btn {
-                font-size: 0.65rem;
-                min-height: 20px;
-                padding: var(--spacing-xs) var(--spacing-sm);
-            }
-
-            .copy-btn i {
-                font-size: 0.65rem;
-            }
-
-            .code-item span {
-                max-width: 150px;
-                font-size: 0.875rem;
-            }
-
-            .code-column {
-                max-width: 100%;
-            }
-
-            .progress-bar-overlay {
-                top: calc(56px + 5px);
-                max-width: 90%;
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(20px); height: 0; padding: 0; margin: 0; }
-        }
-
-        @keyframes progress {
-            0% { width: 0; }
-            100% { width: 100%; }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header class="app-header">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="width: 40px; height: 40px;">
-        <h1 class="headline-small">DOR XL</h1>
-    </header>
-
-    <!-- Content -->
-    <main id="content" class="page container">
-        <!-- Messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
-                    <span class="warning-icon">!</span>
-                    <p>{{ message.message }}</p>
+            <!-- Request Phone Number -->
+            {% if request_phone %}
+                <div class="card">
+                    <h2 class="headline-medium">Tambah Nomor Telepon</h2>
+                    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                    <p class="body-medium">Silakan masukkan nomor telepon untuk menerima kode OTP.</p>
+                    <form method="POST" action="{{ url_for('index') }}">
+                        <div class="input-group">
+                            <label for="phone" class="label-large">Nomor Telepon</label>
+                            <input type="text" name="phone" id="phone" class="text-field" placeholder="081234567890 or 6281234567890" required>
+                        </div>
+                        <button type="submit" class="btn btn-filled">Kirim OTP</button>
+                    </form>
                 </div>
-            {% endfor %}
-        {% endif %}
 
-        <!-- Request Phone Number -->
-        {% if request_phone %}
-            <div class="card">
-                <h2 class="headline-medium">Tambah Nomor Telepon</h2>
-                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <p class="body-medium">Silakan masukkan nomor telepon untuk menerima kode OTP.</p>
-                <form method="POST" action="{{ url_for('index') }}">
-                    <div class="input-group">
-                        <label for="phone" class="label-large">Nomor Telepon</label>
-                        <input type="text" name="phone" id="phone" class="text-field" placeholder="081234567890 or 6281234567890" required>
-                    </div>
-                    <button type="submit" class="btn btn-filled">Kirim OTP</button>
-                </form>
-            </div>
-
-        <!-- Switch Account -->
-        {% elif switch_account %}
-            <div class="card">
-                <h2 class="headline-medium">Akun Tersimpan</h2>
-                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                {% if users|length == 0 %}
-                    <p class="body-medium">Tidak ada akun tersimpan.</p>
-                {% else %}
-                    <ul class="list-container">
-                        {% for user in users %}
-                            <li>
-                                <span>62{{ user.number }}{% if active_user and active_user.number == user.number %} (Aktif){% endif %}</span>
-                                <div>
-                                    {% if active_user and active_user.number != user.number %}
-                                        <form method="POST" action="{{ url_for('switch_account') }}" style="display: inline;">
-                                            <input type="hidden" name="action" value="switch">
-                                            <input type="hidden" name="number" value="{{ user.number }}">
-                                            <button type="submit" class="btn btn-text">Pilih</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                <form method="POST" action="{{ url_for('switch_account') }}">
-                    <input type="hidden" name="action" value="add">
-                    <div class="input-group">
-                        <label for="phone" class="label-large">Tambah Akun (Nomor Telepon)</label>
-                        <input type="text" name="phone" id="phone" class="text-field" placeholder="081234567890 or 6281234567890" required>
-                    </div>
-                    <button type="submit" class="btn btn-filled">Tambah</button>
-                    <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
-                </form>
-            </div>
-
-        <!-- Verify OTP -->
-        {% elif verify_otp %}
-            <div class="card">
-                <h2 class="headline-medium">Verifikasi OTP</h2>
-                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <form method="POST" action="{{ url_for('verify_otp') }}">
-                    <div class="input-group">
-                        <label for="otp" class="label-large">Masukkan kode OTP 6 digit</label>
-                        <input type="text" name="otp" id="otp" class="text-field" placeholder="123456" required>
-                    </div>
-                    <button type="submit" class="btn btn-filled">Verifikasi</button>
-                    <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
-                </form>
-            </div>
-
-        <!-- My Packages -->
-        {% elif my_packages %}
-            <div class="card">
-                <h2 class="headline-medium">Paket Saya</h2>
-                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                {% if packages|length == 0 %}
-                    <p class="body-medium">Tidak ada paket aktif.</p>
-                {% else %}
-                    <ul class="list-container">
-                        {% for package in packages %}
-                            <li>
-                                <strong>{{ package.name }}</strong>
-                                <p class="body-medium">
-                                    Kode: {{ package.package_option_code }}<br>
-                                    Harga: Rp {{ package.price|int|format_number }}<br>
-                                    Mulai: {{ package.created_at }}<br>
-                                    Berakhir: {{ package.expired_at }}
-                                </p>
-                                <a href="{{ url_for('package_details', code=package.package_option_code) }}" class="btn btn-outlined">Detail</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
-            </div>
-
-        <!-- Main Dashboard -->
-        {% else %}
-            <div class="account-info">
-                <h2 class="headline-medium">Informasi Akun</h2>
-                <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <p class="body-medium">
-                    Nomor: {{ phone_number }}<br>
-                    Sisa Kuota: {{ remaining_balance|int|format_number }} MB<br>
-                    Berlaku Hingga: {{ expired_at }}
-                </p>
-                <a href="{{ url_for('switch_account') }}" class="btn btn-outlined">Ganti Akun</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-outlined">Logout</a>
-            </div>
-
-            <div class="main-menu">
-                <h2 class="headline-medium">Menu Utama</h2>
-                <div class="grid-menu">
-                    <a href="{{ url_for('my_packages') }}" class="grid-item">
-                        <div class="grid-icon"><i class="fas fa-box"></i></div>
-                        <div class="grid-title">Paket Saya</div>
-                        <div class="grid-description">Lihat paket aktif Anda</div>
-                    </a>
-                    <a href="{{ url_for('buy_package') }}" class="grid-item">
-                        <div class="grid-icon"><i class="fas fa-shopping-cart"></i></div>
-                        <div class="grid-title">Beli Paket</div>
-                        <div class="grid-description">Beli paket baru</div>
-                    </a>
-                    <a href="{{ url_for('family_packages') }}" class="grid-item">
-                        <div class="grid-icon"><i class="fas fa-users"></i></div>
-                        <div class="grid-title">Paket Keluarga</div>
-                        <div class="grid-description">Paket untuk keluarga</div>
-                    </a>
-                    <a href="{{ url_for('enterprise_packages') }}" class="grid-item">
-                        <div class="grid-icon"><i class="fas fa-briefcase"></i></div>
-                        <div class="grid-title">Paket Enterprise</div>
-                        <div class="grid-description">Paket untuk bisnis</div>
-                    </a>
+            <!-- Switch Account -->
+            {% elif switch_account %}
+                <div class="card">
+                    <h2 class="headline-medium">Akun Tersimpan</h2>
+                    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                    {% if users|length == 0 %}
+                        <p class="body-medium">Tidak ada akun tersimpan.</p>
+                    {% else %}
+                        <ul class="list-container">
+                            {% for user in users %}
+                                <li>
+                                    <span>62{{ user.number }}{% if active_user and active_user.number == user.number %} (Aktif){% endif %}</span>
+                                    <div>
+                                        {% if active_user and active_user.number != user.number %}
+                                            <form method="POST" action="{{ url_for('switch_account') }}" style="display: inline;">
+                                                <input type="hidden" name="action" value="switch">
+                                                <input type="hidden" name="number" value="{{ user.number }}">
+                                                <button type="submit" class="btn btn-text">Pilih</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('switch_account') }}">
+                        <input type="hidden" name="action" value="add">
+                        <div class="input-group">
+                            <label for="phone" class="label-large">Tambah Akun (Nomor Telepon)</label>
+                            <input type="text" name="phone" id="phone" class="text-field" placeholder="081234567890 or 6281234567890" required>
+                        </div>
+                        <button type="submit" class="btn btn-filled">Tambah</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                    </form>
                 </div>
-            </div>
-        {% endif %}
-    </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Auto-dismiss messages after 5 seconds
-            const messages = document.querySelectorAll('.warning-message, .success-message');
-            messages.forEach((msg, index) => {
-                msg.style.animationDelay = `${index * 0.2}s`;
-                setTimeout(() => {
-                    msg.classList.add('fade-out');
-                    setTimeout(() => msg.remove(), 500);
-                }, 5000);
-            });
+            <!-- Verify OTP -->
+            {% elif verify_otp %}
+                <div class="card">
+                    <h2 class="headline-medium">Verifikasi OTP</h2>
+                    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                    <form method="POST" action="{{ url_for('verify_otp') }}">
+                        <div class="input-group">
+                            <label for="otp" class="label-large">Masukkan kode OTP 6 digit</label>
+                            <input type="text" name="otp" id="otp" class="text-field" placeholder="123456" required>
+                        </div>
+                        <button type="submit" class="btn btn-filled">Verifikasi</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                    </form>
+                </div>
 
-            // Handle form submission with progress bar
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
-                form.addEventListener('submit', () => {
-                    const progressBar = form.closest('.card')?.querySelector('.progress-bar') || document.querySelector('.progress-bar-overlay');
-                    if (progressBar) {
-                        progressBar.style.display = 'block';
-                    }
+            <!-- My Packages -->
+            {% elif my_packages %}
+                <div class="card">
+                    <h2 class="headline-medium">Paket Saya</h2>
+                    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                    {% if packages|length == 0 %}
+                        <p class="body-medium">Tidak ada paket aktif.</p>
+                    {% else %}
+                        <ul class="list-container">
+                            {% for package in packages %}
+                                <li>
+                                    <strong>{{ package.name }}</strong>
+                                    <p class="body-medium">
+                                        Kode: {{ package.package_option_code }}<br>
+                                        Harga: Rp {{ package.price|int|format_number }}<br>
+                                        Mulai: {{ package.created_at }}<br>
+                                        Berakhir: {{ package.expired_at }}
+                                    </p>
+                                    <a href="{{ url_for('package_details', code=package.package_option_code) }}" class="btn btn-outlined">Detail</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <a href="{{ url_for('index') }}" class="btn btn-outlined">Kembali</a>
+                </div>
+
+            <!-- Main Dashboard -->
+            {% else %}
+                <div class="account-info">
+                    <h2 class="headline-medium">Informasi Akun</h2>
+                    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+                    <p class="body-medium">
+                        Nomor: {{ phone_number }}<br>
+                        Sisa Pulsa: {{ remaining_balance|int|format_number }} MB<br>
+                        Berlaku Hingga: {{ expired_at }}
+                    </p>
+                    <a href="{{ url_for('switch_account') }}" class="btn btn-outlined">Ganti Akun</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outlined">Logout</a>
+                </div>
+
+                <div class="main-menu">
+                    <h2 class="headline-medium">Menu Utama</h2>
+                    <div class="grid-menu">
+                        <a href="{{ url_for('my_packages') }}" class="grid-item">
+                            <div class="grid-icon"><i class="fas fa-box"></i></div>
+                            <div class="grid-title">Paket Saya</div>
+                            <div class="grid-description">Lihat paket aktif Anda</div>
+                        </a>
+                        <a href="{{ url_for('buy_package') }}" class="grid-item">
+                            <div class="grid-icon"><i class="fas fa-shopping-cart"></i></div>
+                            <div class="grid-title">Beli Paket</div>
+                            <div class="grid-description">Beli paket baru</div>
+                        </a>
+                        <a href="{{ url_for('family_packages') }}" class="grid-item">
+                            <div class="grid-icon"><i class="fas fa-users"></i></div>
+                            <div class="grid-title">Paket Keluarga</div>
+                            <div class="grid-description">Paket untuk keluarga</div>
+                        </a>
+                        <a href="{{ url_for('enterprise_packages') }}" class="grid-item">
+                            <div class="grid-icon"><i class="fas fa-briefcase"></i></div>
+                            <div class="grid-title">Paket Enterprise</div>
+                            <div class="grid-description">Paket untuk bisnis</div>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Auto-dismiss dialogs after 5 seconds
+                const dialogs = document.querySelectorAll('dialog');
+                dialogs.forEach((dialog, index) => {
+                    dialog.style.animationDelay = `${index * 0.2}s`;
+                    setTimeout(() => {
+                        dialog.classList.add('fade-out');
+                        setTimeout(() => dialog.close(), 500);
+                    }, 5000);
+                });
+
+                // Handle form submission with progress bar
+                const forms = document.querySelectorAll('form');
+                forms.forEach(form => {
+                    form.addEventListener('submit', () => {
+                        const progressBar = form.closest('.card')?.querySelector('.progress-bar') || document.querySelector('.progress-bar-overlay');
+                        if (progressBar) {
+                            progressBar.style.display = 'block';
+                        }
+                    });
                 });
             });
-        });
-    </script>
-</body>
+        </script>
+    </body>
 </html>
