@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login / Register</title>
     <style>
-        /* CSS tetap sama seperti yang kamu berikan, tidak diubah sama sekali */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -295,11 +294,27 @@
             border-radius: var(--md-sys-shape-corner-small);
             border-left: 4px solid #dc2626;
             margin-bottom: var(--spacing-md);
+            justify-content: flex-start;
+            animation: slideIn 0.5s ease-in-out forwards;
+            opacity: 0;
         }
 
         .success-message {
             background: var(--md-sys-color-secondary-container);
             border-left: 4px solid var(--md-sys-color-secondary);
+            justify-content: flex-start;
+            animation: slideIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .warning-message.fade-out, .success-message.fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+
+        .warning-message p {
+            flex-grow: 1;
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface);
         }
 
         .warning-icon {
@@ -352,6 +367,26 @@
             height: 100%;
             background: var(--md-sys-color-primary);
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(20px); height: 0; padding: 0; margin: 0; }
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
         }
 
         @media (min-width: 768px) {
@@ -458,14 +493,6 @@
             color: var(--md-sys-color-secondary);
             text-decoration: underline;
         }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.visible {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -486,7 +513,7 @@
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="warning-message {{ 'success-message' if category == 'success' else 'error-message' }}">
+                        <div class="{{ 'success-message' if category == 'success' else 'warning-message' }}">
                             <span class="warning-icon">!</span>
                             <p>{{ message }}</p>
                         </div>
@@ -569,14 +596,14 @@
                 }
             }
 
-            // Sembunyikan progress bar setelah 3 detik
+            // Hide progress bar after 3 seconds
             setTimeout(() => {
                 progressBar.classList.remove('active');
                 element.style.pointerEvents = 'auto';
             }, 3000);
         }
 
-        // Add event listeners to form buttons and check for errors on page load
+        // Add event listeners to form buttons and auto-dismiss messages
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('.btn-filled[type="submit"]');
             buttons.forEach(button => {
@@ -586,8 +613,18 @@
                 });
             });
 
-            // Tampilkan progress bar jika ada pesan error saat halaman dimuat
-            const errorMessages = document.querySelectorAll('.error-message');
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.warning-message, .success-message');
+            messages.forEach((msg, index) => {
+                msg.style.animationDelay = `${index * 0.2}s`;
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+
+            // Show progress bar if there are error messages on page load
+            const errorMessages = document.querySelectorAll('.warning-message');
             if (errorMessages.length > 0) {
                 const progressBar = document.getElementById('progress-bar-overlay');
                 progressBar.classList.add('active');
