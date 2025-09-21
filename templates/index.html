@@ -351,6 +351,20 @@
             color: var(--md-sys-color-secondary);
         }
 
+        .toggle-visibility {
+            cursor: pointer;
+            font-size: var(--md-typ-label-large);
+            color: var(--md-sys-color-primary);
+            margin-top: var(--spacing-md);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .hidden {
+            display: none;
+        }
+
         @media (min-width: 768px) {
             .container {
                 padding: var(--spacing-lg);
@@ -555,11 +569,16 @@
             <div class="account-info">
                 <h2 class="headline-medium">Informasi Akun</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
-                <p class="body-medium">
-                    Nomor: {{ phone_number }}<br>
-                    Sisa Pulsa: Rp {{ remaining_balance|int|format_number }}
-                    Berlaku Hingga: {{ expired_at }}
-                </p>
+                <div class="account-details">
+                    <p class="body-medium">
+                        Nomor: {{ phone_number }}<br>
+                        Sisa Pulsa: Rp {{ remaining_balance|int }}<br>
+                        Berlaku Hingga: {{ expired_at }}
+                    </p>
+                </div>
+                <div class="toggle-visibility" onclick="toggleAccountDetails()">
+                    <i class="fas fa-eye"></i> Sembunyikan Detail
+                </div>
                 <a href="{{ url_for('switch_account') }}" class="btn btn-outlined">Ganti Akun</a>
                 <a href="{{ url_for('logout') }}" class="btn btn-outlined">Logout</a>
             </div>
@@ -615,6 +634,18 @@
                 });
             });
         });
+
+        function toggleAccountDetails() {
+            const details = document.querySelector('.account-details');
+            const toggleBtn = document.querySelector('.toggle-visibility');
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Sembunyikan Detail';
+            } else {
+                details.classList.add('hidden');
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Tampilkan Detail';
+            }
+        }
     </script>
 </body>
 </html>
