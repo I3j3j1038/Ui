@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Check - DOR XL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
     <style>
         :root {
             --md-sys-color-primary: #1e3a8a;
@@ -51,6 +52,13 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            animation: pageFadeIn 0.5s ease-in forwards;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .app-header {
@@ -137,11 +145,13 @@
             border-left: 4px solid var(--md-sys-color-primary);
             transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
             box-shadow: var(--md-sys-elevation-1);
+            transform: translateY(0);
         }
 
         .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            border-left-color: var(--md-sys-color-secondary);
         }
 
         .stat-card.healthy {
@@ -175,6 +185,7 @@
 
         .progress-container {
             margin: var(--spacing-md) 0;
+            position: relative;
         }
 
         .progress-label {
@@ -202,6 +213,22 @@
         .progress-fill.healthy { background: linear-gradient(90deg, var(--md-sys-color-secondary), var(--md-sys-color-secondary-container)); }
         .progress-fill.warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
         .progress-fill.unhealthy { background: linear-gradient(90deg, var(--md-sys-color-error), var(--md-sys-color-error-container)); }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--md-sys-color-error);
+            color: var(--md-sys-color-on-primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            animation: pulse 1.5s infinite;
+        }
 
         .info-grid {
             display: grid;
@@ -237,11 +264,16 @@
             padding: var(--spacing-sm);
             border-radius: var(--md-sys-shape-corner-small);
             margin: var(--spacing-sm) 0;
+            transition: background-color 0.3s ease;
         }
 
         .api-status.healthy { background: var(--md-sys-color-secondary-container); }
         .api-status.unhealthy { background: var(--md-sys-color-error-container); }
         .api-status.unreachable { background: #fef3c7; }
+
+        .api-status.changed {
+            animation: pulse 1s ease-in-out;
+        }
 
         .status-icon {
             font-size: 1.2rem;
@@ -282,6 +314,54 @@
             border-left-color: var(--md-sys-color-secondary);
         }
 
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            border-radius: var(--md-sys-shape-corner-small);
+            cursor: pointer;
+            font-size: var(--md-typ-label-large);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: translateY(-2px);
+        }
+
+        .btn.refreshing .fa-sync-alt {
+            animation: spin 1s linear infinite;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .stats-grid, .info-grid {
                 grid-template-columns: 1fr;
@@ -295,16 +375,6 @@
                 padding: var(--spacing-sm);
                 margin-top: calc(var(--spacing-sm) + 56px);
             }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
         }
     </style>
 </head>
@@ -335,6 +405,9 @@
         <!-- Health Score -->
         <div class="card">
             <h2><i class="fas fa-chart-line"></i> Health Score</h2>
+            <button id="refresh-health" class="btn btn-primary">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
             <div class="progress-container">
                 <div class="progress-label">
                     <span>Overall System Health</span>
@@ -402,7 +475,7 @@
         <div class="card">
             <h3><i class="fas fa-tachometer-alt"></i> Resource Usage</h3>
             <div class="stats-grid">
-                <div class="stat-card {% if resource_info.cpu_usage < 70 %}healthy{% elif resource_info.cpu_usage < 90 %}warning{% else %}unhealthy{% endif %}">
+                <div class="stat-card cpu {% if resource_info.cpu_usage < 70 %}healthy{% elif resource_info.cpu_usage < 90 %}warning{% else %}unhealthy{% endif %}">
                     <div class="stat-value normal">
                         <i class="fas fa-microchip"></i>
                         {{ "%.1f"|format(resource_info.cpu_usage or 0) }}%
@@ -417,7 +490,7 @@
                     </div>
                 </div>
                 
-                <div class="stat-card {% if resource_info.memory_percent < 70 %}healthy{% elif resource_info.memory_percent < 90 %}warning{% else %}unhealthy{% endif %}">
+                <div class="stat-card memory {% if resource_info.memory_percent < 70 %}healthy{% elif resource_info.memory_percent < 90 %}warning{% else %}unhealthy{% endif %}">
                     <div class="stat-value normal">
                         <i class="fas fa-memory"></i>
                         {{ "%.1f"|format(resource_info.memory_percent or 0) }}%
@@ -432,7 +505,7 @@
                     </div>
                 </div>
                 
-                <div class="stat-card {% if resource_info.disk_percent < 80 %}healthy{% elif resource_info.disk_percent < 95 %}warning{% else %}unhealthy{% endif %}">
+                <div class="stat-card disk {% if resource_info.disk_percent < 80 %}healthy{% elif resource_info.disk_percent < 95 %}warning{% else %}unhealthy{% endif %}">
                     <div class="stat-value normal">
                         <i class="fas fa-hdd"></i>
                         {{ "%.1f"|format(resource_info.disk_percent or 0) }}%
@@ -470,11 +543,11 @@
         <div class="card">
             <h3><i class="fas fa-network-wired"></i> API Endpoints Status</h3>
             {% for name, status in app_status.api_endpoints.items() %}
-            <div class="api-status {{ status.status }}">
+            <div class="api-status {{ status.status }}" data-api="{{ name }}">
                 <i class="fas fa-circle status-icon {{ status.status }}"></i>
                 <div style="flex-grow: 1;">
                     <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">{{ name|title }} API</div>
-                    <div style="font-size: 0.875rem; opacity: 0.7;">
+                    <div class="status-text" style="font-size: 0.875rem; opacity: 0.7;">
                         Status: {{ status.status|title }}{% if status.response_time %} | Response: {{ "%.2f"|format(status.response_time) }}s{% endif %}
                     </div>
                 </div>
@@ -495,7 +568,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Auto-dismiss messages after 5 seconds
+            // Auto-dismiss messages
             const messages = document.querySelectorAll('.warning-message, .success-message');
             messages.forEach((msg, index) => {
                 msg.style.animationDelay = `${index * 0.2}s`;
@@ -514,6 +587,157 @@
                     bar.style.width = width;
                 }, 500);
             });
+
+            // WebSocket setup
+            let lastHealthData = null;
+            const socket = io('/health');
+
+            function updateHealthUI(data) {
+                // Update health score
+                const healthScoreElement = document.querySelector('.progress-label span:last-child');
+                const progressFill = document.querySelector('.progress-container .progress-fill');
+                if (healthScoreElement && progressFill) {
+                    const newScore = data.health_score || 0;
+                    healthScoreElement.textContent = `${newScore}%`;
+                    progressFill.style.width = `${newScore}%`;
+                    progressFill.className = `progress-fill ${
+                        newScore >= 80 ? 'healthy' : newScore >= 50 ? 'warning' : 'unhealthy'
+                    }`;
+
+                    // Add notification badge if health score drops significantly
+                    const healthScoreContainer = document.querySelector('.progress-container');
+                    if (lastHealthData && data.health_score < 70 && lastHealthData.health_score >= 70) {
+                        const badge = document.createElement('div');
+                        badge.className = 'notification-badge';
+                        badge.textContent = '!';
+                        healthScoreContainer.style.position = 'relative';
+                        healthScoreContainer.appendChild(badge);
+                        setTimeout(() => badge.remove(), 5000);
+                    }
+                }
+
+                // Update API statuses
+                Object.entries(data.services).forEach(([name, status]) => {
+                    const apiElement = document.querySelector(`.api-status[data-api="${name}"]`);
+                    if (apiElement) {
+                        const currentStatus = apiElement.classList.contains('healthy') ? 'healthy' :
+                                             apiElement.classList.contains('unhealthy') ? 'unhealthy' : 'unreachable';
+                        if (currentStatus !== status.status || JSON.stringify(lastHealthData?.services[name]) !== JSON.stringify(status)) {
+                            apiElement.classList.remove('healthy', 'unhealthy', 'unreachable');
+                            apiElement.classList.add(status.status, 'changed');
+                            apiElement.querySelector('.status-icon').classList.remove('healthy', 'unhealthy', 'unreachable');
+                            apiElement.querySelector('.status-icon').classList.add(status.status);
+                            apiElement.querySelector('.status-text').textContent = 
+                                `Status: ${status.status.charAt(0).toUpperCase() + status.status.slice(1)}` +
+                                (status.response_time ? ` | Response: ${status.response_time.toFixed(2)}s` : '');
+                            setTimeout(() => apiElement.classList.remove('changed'), 1000);
+                        }
+                    }
+                });
+
+                // Update resource usage
+                const resourceFields = [
+                    { selector: '.stat-card.cpu', key: 'cpu_usage', progress: true },
+                    { selector: '.stat-card.memory', key: 'memory_percent', progress: true },
+                    { selector: '.stat-card.disk', key: 'disk_percent', progress: true }
+                ];
+                resourceFields.forEach(field => {
+                    const element = document.querySelector(field.selector);
+                    if (element && data.resources[field.key]) {
+                        const value = data.resources[field.key].toFixed(1);
+                        element.querySelector('.stat-value').textContent = `${value}%`;
+                        if (field.progress) {
+                            const progressFill = element.querySelector('.progress-fill');
+                            progressFill.style.width = `${value}%`;
+                            progressFill.className = `progress-fill ${
+                                value < 70 ? 'healthy' : value < 90 ? 'warning' : 'unhealthy'
+                            }`;
+                        }
+                    }
+                });
+
+                // Update last updated time
+                const lastUpdated = document.querySelector('.last-updated');
+                if (lastUpdated) {
+                    lastUpdated.textContent = `Last Health Check: ${new Date(data.timestamp).toLocaleString()}`;
+                }
+
+                lastHealthData = data;
+            }
+
+            function fetchHealthData() {
+                return fetch('/health.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateHealthUI(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching health data:', error);
+                        const messagesContainer = document.querySelector('.page');
+                        if (messagesContainer) {
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'warning-message';
+                            errorMessage.innerHTML = '<span class="warning-icon">!</span><p>Failed to update health status. Retrying...</p>';
+                            messagesContainer.prepend(errorMessage);
+                            setTimeout(() => errorMessage.remove(), 5000);
+                        }
+                    });
+            }
+
+            socket.on('connect', () => {
+                console.log('Connected to WebSocket');
+                const messagesContainer = document.querySelector('.page');
+                if (messagesContainer) {
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = '<i class="fas fa-check-circle"></i><p>Real-time health updates enabled</p>';
+                    messagesContainer.prepend(successMessage);
+                    setTimeout(() => successMessage.remove(), 5000);
+                }
+            });
+
+            socket.on('health_update', (data) => {
+                updateHealthUI(data);
+            });
+
+            socket.on('error_notification', (data) => {
+                const messagesContainer = document.querySelector('.page');
+                if (messagesContainer) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'warning-message';
+                    errorMessage.innerHTML = `<span class="warning-icon">!</span><p>${data.message}</p>`;
+                    messagesContainer.prepend(errorMessage);
+                    setTimeout(() => errorMessage.remove(), 5000);
+                }
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from WebSocket');
+                const messagesContainer = document.querySelector('.page');
+                if (messagesContainer) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'warning-message';
+                    errorMessage.innerHTML = '<span class="warning-icon">!</span><p>Disconnected from real-time updates. Reconnecting...</p>';
+                    messagesContainer.prepend(errorMessage);
+                    setTimeout(() => errorMessage.remove(), 5000);
+                }
+                // Fallback to polling
+                setInterval(fetchHealthData, 30000);
+            });
+
+            // Initial fetch
+            fetchHealthData();
+
+            // Refresh button
+            const refreshButton = document.querySelector('#refresh-health');
+            if (refreshButton) {
+                refreshButton.addEventListener('click', () => {
+                    refreshButton.classList.add('refreshing');
+                    fetchHealthData().finally(() => {
+                        refreshButton.classList.remove('refreshing');
+                    });
+                });
+            }
         });
     </script>
 </body>
