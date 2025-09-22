@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Internal Server Error - DOR XL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --md-sys-color-primary: #1e3a8a;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d0e7ff;
+            --md-sys-color-on-primary-container: #0f1e5e;
+            --md-sys-color-secondary: #10b981;
+            --md-sys-color-secondary-container: #a7f3d0;
+            --md-sys-color-on-secondary-container: #064e3b;
+            --md-sys-color-error: #dc2626;
+            --md-sys-color-error-container: #fee2e2;
+            --md-sys-color-surface: #f0f7ff;
+            --md-sys-color-surface-container-low: #f8fafc;
+            --md-sys-color-on-surface: #1e293b;
+            --md-sys-color-on-surface-variant: #64748b;
+            --md-sys-color-outline: #e2e8f0;
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+            --md-typ-headline-medium: 2rem;
+            --md-typ-title-large: 1.5rem;
+            --md-typ-body-medium: 1rem;
+            --md-typ-label-large: 0.875rem;
+            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .headline-small {
+            font-size: var(--md-typ-title-large);
+            font-weight: 700;
+            line-height: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            margin-top: calc(var(--spacing-lg) + 72px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .error-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .error-number {
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--md-sys-color-error);
+            line-height: 1;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .error-icon {
+            font-size: 6rem;
+            color: var(--md-sys-color-error-container);
+            animation: wobble 1s ease-in-out;
+        }
+
+        .error-title {
+            font-size: var(--md-typ-headline-medium);
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .error-subtitle {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+            max-width: 500px;
+            margin: 0 auto var(--spacing-lg);
+            line-height: 1.6;
+        }
+
+        .status-details {
+            background: var(--md-sys-color-error-container);
+            border: 1px solid var(--md-sys-color-error);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .status-details h3 {
+            color: var(--md-sys-color-error);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--md-sys-shape-corner-small);
+        }
+
+        .detail-label {
+            font-size: var(--md-typ-label-large);
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            word-break: break-all;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-medium);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: var(--md-typ-label-large);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            border: none;
+            cursor: pointer;
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--md-sys-color-surface-container-low);
+            color: var(--md-sys-color-on-surface);
+            border: 1px solid var(--md-sys-color-outline);
+        }
+
+        .btn-secondary:hover {
+            background: var(--md-sys-color-surface);
+            transform: translateY(-2px);
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .btn-error {
+            background: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-error);
+            border: 1px solid var(--md-sys-color-error);
+        }
+
+        .btn-error:hover {
+            background: var(--md-sys-color-error);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .troubleshooting {
+            margin-top: var(--spacing-xl);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .troubleshooting h3 {
+            font-size: var(--md-typ-title-large);
+            color: var(--md-sys-color-primary);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .troubleshooting-steps {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-medium);
+            border-left: 4px solid var(--md-sys-color-primary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-item::before {
+            content: attr(data-step);
+            position: absolute;
+            left: var(--spacing-lg);
+            top: var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .step-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-content {
+            margin-left: 40px;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .step-description {
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+        }
+
+        .support-info {
+            background: var(--md-sys-color-primary-container);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .support-info h3 {
+            color: var(--md-sys-color-on-primary-container);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .support-contact {
+            display: flex;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--md-sys-shape-corner-small);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        @media (max-width: 768px) {
+            .error-number {
+                font-size: 5rem;
+            }
+            
+            .error-icon {
+                font-size: 4rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .support-contact {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .container {
+                padding: var(--spacing-sm);
+                margin-top: calc(var(--spacing-sm) + 56px);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(-5deg); }
+            30% { transform: rotate(3deg); }
+            45% { transform: rotate(-3deg); }
+            60% { transform: rotate(2deg); }
+            75% { transform: rotate(-1deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--md-sys-color-error);
+            animation: pulse 1.5s infinite;
+            margin-right: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <i class="fas fa-bug" style="font-size: 2rem; color: var(--md-sys-color-error);"></i>
+        <h1 class="headline-small">Server Error</h1>
+        <div style="margin-left: auto;">
+            <a href="/" style="color: inherit; text-decoration: none; padding: 8px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; font-size: 0.875rem;">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="container">
+        <div class="error-hero fade-in">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="error-number">500</div>
+            <h2 class="error-title">Internal Server Error</h2>
+            <p class="error-subtitle">
+                Something unexpected happened on our end. Our team has been notified and we're working 
+                to resolve this as quickly as possible. Thank you for your patience.
+            </p>
+        </div>
+
+        <div class="status-details fade-in" style="animation-delay: 0.2s;">
+            <h3>
+                <span class="status-indicator"></span>
+                Technical Details
+            </h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-clock"></i> Timestamp</div>
+                    <div class="detail-value">{{ current_time or 'Just now' }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-server"></i> Server</div>
+                    <div class="detail-value">{{ hostname or 'DOR XL Server' }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-bolt"></i> Status Code</div>
+                    <div class="detail-value">500 Internal Server Error</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-user"></i> Request ID</div>
+                    <div class="detail-value">{{ request_id or 'N/A' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons fade-in" style="animation-delay: 0.4s;">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Go to Dashboard
+            </a>
+            <button onclick="location.reload()" class="btn btn-secondary">
+                <i class="fas fa-redo"></i>
+                Try Again
+            </button>
+            <a href="mailto:support@dorexl.com?subject=Server Error Report&body=Request ID: {{ request_id or 'N/A' }}" 
+               class="btn btn-error">
+                <i class="fas fa-envelope"></i>
+                Report Issue
+            </a>
+        </div>
+
+        <div class="troubleshooting fade-in" style="animation-delay: 0.6s;">
+            <h3><i class="fas fa-tools"></i> Troubleshooting Steps</h3>
+            <div class="troubleshooting-steps">
+                <div class="step-item" data-step="1">
+                    <div class="step-content">
+                        <div class="step-number">1</div>
+                        <div class="step-description">
+                            <strong>Refresh the page:</strong> Sometimes a simple refresh can resolve temporary issues.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-item" data-step="2">
+                    <div class="step-content">
+                        <div class="step-number">2</div>
+                        <div class="step-description">
+                            <strong>Clear browser cache:</strong> Cached data might be causing conflicts. Try clearing your browser cache.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-item" data-step="3">
+                    <div class="step-content">
+                        <div class="step-number">3</div>
+                        <div class="step-description">
+                            <strong>Check your connection:</strong> Ensure you have a stable internet connection.
+                        </div>
+                    </div>
+                </div>
+                <div class="step-item" data-step="4">
+                    <div class="step-content">
+                        <div class="step-number">4</div>
+                        <div class="step-description">
+                            <strong>Contact support:</strong> If the problem persists, our support team is here to help.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="support-info fade-in" style="animation-delay: 0.8s;">
+            <h3><i class="fas fa-headset"></i> Need Help?</h3>
+            <p style="color: var(--md-sys-color-on-primary-container); text-align: center; max-width: 400px;">
+                Our support team is available 24/7 to assist you with any issues.
+            </p>
+            <div class="support-contact">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>support@dorexl.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+1 (555) 123-4567</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Response within 1 hour</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add staggered animation to elements
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Auto-retry after 30 seconds (optional)
+            setTimeout(() => {
+                if (confirm('Still experiencing issues? Would you like to automatically retry?')) {
+                    location.reload();
+                }
+            }, 30000);
+
+            // Add error logging
+            console.error('500 Internal Server Error - Request ID: {{ request_id or "N/A" }}');
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && e.ctrlKey) {
+                e.preventDefault();
+                location.reload();
+            }
+            if (e.key === 'h' && e.ctrlKey) {
+                e.preventDefault();
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>
