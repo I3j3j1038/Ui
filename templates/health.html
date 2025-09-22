@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Check - DOR XL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --md-sys-color-primary: #1e3a8a;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d0e7ff;
+            --md-sys-color-on-primary-container: #0f1e5e;
+            --md-sys-color-secondary: #10b981;
+            --md-sys-color-secondary-container: #a7f3d0;
+            --md-sys-color-on-secondary-container: #064e3b;
+            --md-sys-color-error: #dc2626;
+            --md-sys-color-error-container: #fee2e2;
+            --md-sys-color-surface: #f0f7ff;
+            --md-sys-color-surface-container-low: #f8fafc;
+            --md-sys-color-on-surface: #1e293b;
+            --md-sys-color-on-surface-variant: #64748b;
+            --md-sys-color-outline: #e2e8f0;
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+            --md-typ-headline-medium: 2rem;
+            --md-typ-title-large: 1.5rem;
+            --md-typ-body-medium: 1rem;
+            --md-typ-label-large: 0.875rem;
+            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .headline-small {
+            font-size: var(--md-typ-title-large);
+            font-weight: 700;
+            line-height: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            margin-top: calc(var(--spacing-lg) + 72px);
+        }
+
+        .page {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            box-shadow: var(--md-sys-elevation-1);
+            width: 100%;
+            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        .card h2 {
+            font-size: var(--md-typ-headline-medium);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.02em;
+        }
+
+        .card h3 {
+            font-size: var(--md-typ-title-large);
+            font-weight: 600;
+            color: var(--md-sys-color-primary);
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            padding-left: var(--spacing-md);
+            border-left: 3px solid var(--md-sys-color-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .stat-card {
+            background: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-small);
+            padding: var(--spacing-md);
+            border-left: 4px solid var(--md-sys-color-primary);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.healthy {
+            border-left-color: var(--md-sys-color-secondary);
+        }
+
+        .stat-card.unhealthy {
+            border-left-color: var(--md-sys-color-error);
+            background: var(--md-sys-color-error-container);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .stat-value.healthy { color: var(--md-sys-color-secondary); }
+        .stat-value.unhealthy { color: var(--md-sys-color-error); }
+        .stat-value.normal { color: var(--md-sys-color-primary); }
+
+        .stat-label {
+            font-size: var(--md-typ-label-large);
+            color: var(--md-sys-color-on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-container {
+            margin: var(--spacing-md) 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--md-typ-label-large);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: var(--md-sys-shape-corner-small);
+            transition: width 0.8s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .progress-fill.healthy { background: linear-gradient(90deg, var(--md-sys-color-secondary), var(--md-sys-color-secondary-container)); }
+        .progress-fill.warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .progress-fill.unhealthy { background: linear-gradient(90deg, var(--md-sys-color-error), var(--md-sys-color-error-container)); }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--md-sys-shape-corner-small);
+            border: 1px solid var(--md-sys-color-outline);
+        }
+
+        .info-label {
+            font-size: var(--md-typ-label-large);
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            word-break: break-all;
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            border-radius: var(--md-sys-shape-corner-small);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .api-status.healthy { background: var(--md-sys-color-secondary-container); }
+        .api-status.unhealthy { background: var(--md-sys-color-error-container); }
+        .api-status.unreachable { background: #fef3c7; }
+
+        .status-icon {
+            font-size: 1.2rem;
+        }
+
+        .status-icon.healthy { color: var(--md-sys-color-secondary); }
+        .status-icon.unhealthy { color: var(--md-sys-color-error); }
+        .status-icon.unreachable { color: #d97706; }
+
+        .last-updated {
+            text-align: center;
+            padding: var(--spacing-md);
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: var(--md-typ-label-large);
+        }
+
+        .warning-message, .success-message {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid var(--md-sys-color-primary);
+            margin-bottom: var(--spacing-md);
+            animation: slideIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .warning-message { 
+            background: var(--md-sys-color-error-container); 
+            border-left-color: var(--md-sys-color-error);
+        }
+
+        .success-message { 
+            background: var(--md-sys-color-secondary-container); 
+            border-left-color: var(--md-sys-color-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid, .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .container {
+                padding: var(--spacing-sm);
+                margin-top: calc(var(--spacing-sm) + 56px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <i class="fas fa-heartbeat" style="font-size: 2rem;"></i>
+        <h1 class="headline-small">Health Check</h1>
+        <div style="margin-left: auto;">
+            <a href="/" style="color: inherit; text-decoration: none; padding: 8px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; font-size: 0.875rem;">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="page container">
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
+                    <span class="warning-icon">!</span>
+                    <p>{{ message.message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Health Score -->
+        <div class="card">
+            <h2><i class="fas fa-chart-line"></i> Health Score</h2>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Overall System Health</span>
+                    <span>{{ health_score }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill {% if health_score >= 80 %}healthy{% elif health_score >= 50 %}warning{% else %}unhealthy{% endif %}" 
+                         style="width: {{ health_score }}%;">
+                    </div>
+                </div>
+                <div class="progress-label" style="margin-top: var(--spacing-sm); font-size: 0.75rem; opacity: 0.7;">
+                    <span>{{ 'Excellent' if health_score >= 90 else 'Good' if health_score >= 70 else 'Warning' if health_score >= 50 else 'Critical' }}</span>
+                    <span>Last Updated: {{ current_time }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Information -->
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> System Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-desktop"></i> OS</div>
+                    <div class="info-value">{{ system_info.os or 'N/A' }} {{ system_info.os_version or '' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-microchip"></i> Architecture</div>
+                    <div class="info-value">{{ system_info.architecture or 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-server"></i> Hostname</div>
+                    <div class="info-value">{{ system_info.hostname or 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-cogs"></i> Processor</div>
+                    <div class="info-value">{{ system_info.processor or 'N/A' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Information -->
+        <div class="card">
+            <h3><i class="fas fa-cog"></i> Server Status</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-code"></i> Python</div>
+                    <div class="info-value">{{ server_info.python_version or 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-flask"></i> Flask</div>
+                    <div class="info-value">{{ server_info.flask_version or 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-clock"></i> Uptime</div>
+                    <div class="info-value">{{ server_info.uptime_formatted or 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-users"></i> Active Users</div>
+                    <div class="info-value">{{ app_status.active_users or 0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resource Usage -->
+        <div class="card">
+            <h3><i class="fas fa-tachometer-alt"></i> Resource Usage</h3>
+            <div class="stats-grid">
+                <div class="stat-card {% if resource_info.cpu_usage < 70 %}healthy{% elif resource_info.cpu_usage < 90 %}warning{% else %}unhealthy{% endif %}">
+                    <div class="stat-value normal">
+                        <i class="fas fa-microchip"></i>
+                        {{ "%.1f"|format(resource_info.cpu_usage or 0) }}%
+                    </div>
+                    <div class="stat-label">CPU Usage</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill {% if resource_info.cpu_usage < 70 %}healthy{% elif resource_info.cpu_usage < 90 %}warning{% else %}unhealthy{% endif %}" 
+                                 style="width: {{ resource_info.cpu_usage or 0 }}%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card {% if resource_info.memory_percent < 70 %}healthy{% elif resource_info.memory_percent < 90 %}warning{% else %}unhealthy{% endif %}">
+                    <div class="stat-value normal">
+                        <i class="fas fa-memory"></i>
+                        {{ "%.1f"|format(resource_info.memory_percent or 0) }}%
+                    </div>
+                    <div class="stat-label">Memory Usage</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill {% if resource_info.memory_percent < 70 %}healthy{% elif resource_info.memory_percent < 90 %}warning{% else %}unhealthy{% endif %}" 
+                                 style="width: {{ resource_info.memory_percent or 0 }}%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card {% if resource_info.disk_percent < 80 %}healthy{% elif resource_info.disk_percent < 95 %}warning{% else %}unhealthy{% endif %}">
+                    <div class="stat-value normal">
+                        <i class="fas fa-hdd"></i>
+                        {{ "%.1f"|format(resource_info.disk_percent or 0) }}%
+                    </div>
+                    <div class="stat-label">Disk Usage</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill {% if resource_info.disk_percent < 80 %}healthy{% elif resource_info.disk_percent < 95 %}warning{% else %}unhealthy{% endif %}" 
+                                 style="width: {{ resource_info.disk_percent or 0 }}%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-grid" style="margin-top: var(--spacing-lg);">
+                <div class="info-item">
+                    <div class="info-label">Memory Used</div>
+                    <div class="info-value">{{ resource_info.memory_used or 'N/A' }} / {{ resource_info.memory_total or 'N/A' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Disk Used</div>
+                    <div class="info-value">{{ resource_info.disk_used or 'N/A' }} / {{ resource_info.disk_total or 'N/A' }}</div>
+                </div>
+                {% if resource_info.load_average %}
+                <div class="info-item">
+                    <div class="info-label">Load Average</div>
+                    <div class="info-value">{{ "%.2f"|format(resource_info.load_average[0]) }} (1min)</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- API Status -->
+        <div class="card">
+            <h3><i class="fas fa-network-wired"></i> API Endpoints Status</h3>
+            {% for name, status in app_status.api_endpoints.items() %}
+            <div class="api-status {{ status.status }}">
+                <i class="fas fa-circle status-icon {{ status.status }}"></i>
+                <div style="flex-grow: 1;">
+                    <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">{{ name|title }} API</div>
+                    <div style="font-size: 0.875rem; opacity: 0.7;">
+                        Status: {{ status.status|title }}{% if status.response_time %} | Response: {{ "%.2f"|format(status.response_time) }}s{% endif %}
+                    </div>
+                </div>
+                {% if status.status_code %}
+                <div style="background: rgba(0,0,0,0.1); padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.75rem;">
+                    {{ status.status_code }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Last Updated -->
+        <div class="last-updated">
+            <i class="fas fa-clock"></i> Last Health Check: {{ current_time }}
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.warning-message, .success-message');
+            messages.forEach((msg, index) => {
+                msg.style.animationDelay = `${index * 0.2}s`;
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+
+            // Animate progress bars on load
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
