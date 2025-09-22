@@ -465,8 +465,16 @@
                     <div class="info-value">{{ server_info.uptime_formatted or 'N/A' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label"><i class="fas fa-users"></i> Active Users</div>
-                    <div class="info-value">{{ app_status.active_users or 0 }}</div>
+                    <div class="info-label"><i class="fas fa-users"></i> Total Users</div>
+                    <div class="info-value" id="total-users">{{ app_status.total_users or 0 }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-user-check"></i> Active Users</div>
+                    <div class="info-value" id="active-users">{{ app_status.active_users or 0 }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-exchange-alt"></i> Total Requests</div>
+                    <div class="info-value" id="total-requests">{{ app_status.total_requests or 0 }}</div>
                 </div>
             </div>
         </div>
@@ -505,27 +513,6 @@
                     </div>
                 </div>
                 
-                <div class="stat-card disk {% if resource_info.disk_percent < 80 %}healthy{% elif resource_info.disk_percent < 95 %}warning{% else %}unhealthy{% endif %}">
-                    <div class="stat-value normal">
-                        <i class="fas fa-hdd"></i>
-                        {{ "%.1f"|format(resource_info.disk_percent or 0) }}%
-                    </div>
-                    <div class="stat-label">Disk Usage</div>
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill {% if resource_info.disk_percent < 80 %}healthy{% elif resource_info.disk_percent < 95 %}warning{% else %}unhealthy{% endif %}" 
-                                 style="width: {{ resource_info.disk_percent or 0 }}%;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="info-grid" style="margin-top: var(--spacing-lg);">
-                <div class="info-item">
-                    <div class="info-label">Memory Used</div>
-                    <div class="info-value">{{ resource_info.memory_used or 'N/A' }} / {{ resource_info.memory_total or 'N/A' }}</div>
-                </div>
                 <div class="info-item">
                     <div class="info-label">Disk Used</div>
                     <div class="info-value">{{ resource_info.disk_used or 'N/A' }} / {{ resource_info.disk_total or 'N/A' }}</div>
@@ -653,6 +640,19 @@
                                 value < 70 ? 'healthy' : value < 90 ? 'warning' : 'unhealthy'
                             }`;
                         }
+                    }
+                });
+
+                // Update server status
+                const serverFields = [
+                    { selector: '#total-users', key: 'total_users' },
+                    { selector: '#active-users', key: 'active_users' },
+                    { selector: '#total-requests', key: 'total_requests' }
+                ];
+                serverFields.forEach(field => {
+                    const element = document.querySelector(field.selector);
+                    if (element && data[field.key] !== undefined) {
+                        element.textContent = data[field.key];
                     }
                 });
 
