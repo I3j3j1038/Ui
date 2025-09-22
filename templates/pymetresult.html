@@ -315,6 +315,11 @@
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
         }
 
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
         @media (max-width: 600px) {
             .app-header { padding: var(--spacing-sm) var(--spacing-md); }
             .app-header img { width: 40px; height: 40px; }
@@ -346,8 +351,22 @@
         <h1 class="headline-small">DOR XL</h1>
     </header>
 
+    <div class="progress-bar-overlay" id="progress-bar-overlay">
+        <div class="progress-bar-fill"></div>
+    </div>
+
     <div class="container">
         <main id="content" class="page">
+            <!-- Message rendering -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
+                        <span class="warning-icon">!</span>
+                        <p>{{ message.message | safe }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
             <div class="card">
                 <h2>Hasil Pembayaran</h2>
                 <div class="result-content {{ 'success' if status == 'SUCCESS' else 'error' }}">
@@ -411,8 +430,8 @@
                     {% endif %}
                 </div>
                 <div class="button-group" style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; justify-content: center;">
-                    <a href="{{ url_for('index') }}" class="btn btn-filled" onclick="showProgressBar(this)" 
-                       aria-label="Kembali ke beranda">Kembali ke Beranda</a>
+                    <a href="{{ url_for('buy_package') }}" class="btn btn-outlined" onclick="showProgressBar(this)" 
+                       aria-label="Beli lagi">Beli Lagi</a>
                 </div>
             </div>
         </main>
@@ -422,10 +441,8 @@
         function showProgressBar(element) {
             if (element.classList.contains('copy-btn') || element.classList.contains('deeplink-btn')) return;
             element.style.pointerEvents = 'none';
-            const overlay = document.createElement('div');
-            overlay.className = 'progress-bar-overlay active';
-            overlay.innerHTML = '<div class="progress-bar-fill"></div>';
-            document.body.appendChild(overlay);
+            const overlay = document.getElementById('progress-bar-overlay');
+            overlay.classList.add('active');
             if (element.tagName === 'A' && element.href) {
                 setTimeout(() => { window.location.href = element.href; }, 100);
             }
@@ -485,8 +502,45 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.btn-filled[type="submit"]');
+            buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showProgressBar(button);
+                });
+            });
+
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.warning-message, .success-message');
+            messages.forEach((msg, index) => {
+                msg.style.animationDelay = `${index * 0.2}s`;
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+
+            // Show progress bar if there are error messages on page load
+            const errorMessages = document.querySelectorAll('.warning-message');
+            if (errorMessages.length > 0) {
+                const progressBar = document.getElementById('progress-bar-overlay');
+                progressBar.classList.add('active');
+                setTimeout(() => {
+                    progressBar.classList.remove('active');
+                }, 3000);
+            }
+
+            // Auto-redirect to index after 5 minutes
+            setTimeout(() => {
+                const progressBar = document.getElementById('progress-bar-overlay');
+                progressBar.classList.add('active');
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('index') }}";
+                }, 100);
+            }, 300000); // 5 minutes = 300,000 milliseconds
+
+            // Add visible class to cards
             document.querySelectorAll('.card').forEach(card => card.classList.add('visible'));
         });
     </script>
-</body>
-</html>
+</body>         
