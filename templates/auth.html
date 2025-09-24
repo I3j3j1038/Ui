@@ -510,15 +510,13 @@
     <!-- Content -->
     <main id="content" class="page container">
         <div class="card">
-            <!-- Updated message rendering to use 'messages' variable -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
-                        <span class="warning-icon">!</span>
-                        <p>{{ message.message }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
+            <!-- Updated message rendering to use flashed messages -->
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="{{ 'success-message' if category == 'success' else 'warning-message' }}">
+                    <span class="warning-icon">!</span>
+                    <p>{{ message }}</p>
+                </div>
+            {% endfor %}
 
             <!-- Login Form -->
             <div id="login" class="auth-form visible">
@@ -628,4 +626,3 @@
         });
     </script>
 </body>
-</html>
