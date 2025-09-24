@@ -294,15 +294,19 @@
             border-radius: var(--md-sys-shape-corner-small);
             border-left: 4px solid #dc2626;
             margin-bottom: var(--spacing-md);
-            justify-content: flex-start;
             animation: slideIn 0.5s ease-in-out forwards;
             opacity: 0;
         }
 
         .success-message {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
             background: var(--md-sys-color-secondary-container);
             border-left: 4px solid var(--md-sys-color-secondary);
-            justify-content: flex-start;
+            border-radius: var(--md-sys-shape-corner-small);
+            margin-bottom: var(--spacing-md);
             animation: slideIn 0.5s ease-in-out forwards;
             opacity: 0;
         }
@@ -311,7 +315,7 @@
             animation: fadeOut 0.5s ease-in-out forwards;
         }
 
-        .warning-message p {
+        .warning-message p, .success-message p {
             flex-grow: 1;
             font-size: var(--md-typ-body-medium);
             color: var(--md-sys-color-on-surface);
@@ -510,13 +514,38 @@
     <!-- Content -->
     <main id="content" class="page container">
         <div class="card">
-            <!-- Updated message rendering to use flashed messages -->
-            {% for category, message in get_flashed_messages(with_categories=True) %}
-                <div class="{{ 'success-message' if category == 'success' else 'warning-message' }}">
-                    <span class="warning-icon">!</span>
-                    <p>{{ message }}</p>
-                </div>
-            {% endfor %}
+            <!-- Message rendering (only one type of message is shown at a time) -->
+            {% if messages %}
+                {% set has_error = false %}
+                {% set has_success = false %}
+                {% for message in messages %}
+                    {% if message.category == 'error' %}
+                        {% set has_error = true %}
+                    {% endif %}
+                    {% if message.category == 'success' %}
+                        {% set has_success = true %}
+                    {% endif %}
+                {% endfor %}
+                {% if has_error and not has_success %}
+                    {% for message in messages %}
+                        {% if message.category == 'error' %}
+                            <div class="warning-message">
+                                <span class="warning-icon">!</span>
+                                <p>{{ message.message }}</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% elif has_success and not has_error %}
+                    {% for message in messages %}
+                        {% if message.category == 'success' %}
+                            <div class="success-message">
+                                <span class="warning-icon">!</span>
+                                <p>{{ message.message }}</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
 
             <!-- Login Form -->
             <div id="login" class="auth-form visible">
@@ -614,9 +643,9 @@
                 }, 5000);
             });
 
-            // Show progress bar if there are error messages on page load
-            const errorMessages = document.querySelectorAll('.warning-message');
-            if (errorMessages.length > 0) {
+            // Show progress bar if there are messages on page load
+            const anyMessages = document.querySelectorAll('.warning-message, .success-message');
+            if (anyMessages.length > 0) {
                 const progressBar = document.getElementById('progress-bar-overlay');
                 progressBar.classList.add('active');
                 setTimeout(() => {
@@ -626,3 +655,4 @@
         });
     </script>
 </body>
+</html>
