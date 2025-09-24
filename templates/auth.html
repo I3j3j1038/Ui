@@ -298,17 +298,29 @@
         }
 
         .success-message {
-            background: var(--md-sys-color-secondary-container);
-            border-left: 4px solid var(--md-sys-color-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: #fee2e2;
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid #dc2626;
+            margin-bottom: var(--spacing-md);
         }
 
         .warning-icon {
             font-weight: 700;
             color: #dc2626;
         }
+        
+        
+        .success-icon {
+            font-weight: 700;
+            color: #10b981;
+        }
 
         .success-message .warning-icon {
-            color: var(--md-sys-color-secondary);
+            color: #10b981;
         }
 
         .progress-bar {
