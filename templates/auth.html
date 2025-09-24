@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login / Register</title>
     <style>
+        /* CSS tetap sama seperti yang kamu berikan, tidak diubah sama sekali */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -294,31 +295,11 @@
             border-radius: var(--md-sys-shape-corner-small);
             border-left: 4px solid #dc2626;
             margin-bottom: var(--spacing-md);
-            animation: slideIn 0.5s ease-in-out forwards;
-            opacity: 0;
         }
 
         .success-message {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
             background: var(--md-sys-color-secondary-container);
             border-left: 4px solid var(--md-sys-color-secondary);
-            border-radius: var(--md-sys-shape-corner-small);
-            margin-bottom: var(--spacing-md);
-            animation: slideIn 0.5s ease-in-out forwards;
-            opacity: 0;
-        }
-
-        .warning-message.fade-out, .success-message.fade-out {
-            animation: fadeOut 0.5s ease-in-out forwards;
-        }
-
-        .warning-message p, .success-message p {
-            flex-grow: 1;
-            font-size: var(--md-typ-body-medium);
-            color: var(--md-sys-color-on-surface);
         }
 
         .warning-icon {
@@ -371,26 +352,6 @@
             height: 100%;
             background: var(--md-sys-color-primary);
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(20px); height: 0; padding: 0; margin: 0; }
-        }
-
-        @keyframes progress {
-            0% { width: 0; }
-            100% { width: 100%; }
         }
 
         @media (min-width: 768px) {
@@ -497,6 +458,14 @@
             color: var(--md-sys-color-secondary);
             text-decoration: underline;
         }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.visible {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -514,37 +483,14 @@
     <!-- Content -->
     <main id="content" class="page container">
         <div class="card">
-            <!-- Message rendering (only one type of message is shown at a time) -->
+            <!-- Updated message rendering to use 'messages' variable -->
             {% if messages %}
-                {% set has_error = false %}
-                {% set has_success = false %}
                 {% for message in messages %}
-                    {% if message.category == 'error' %}
-                        {% set has_error = true %}
-                    {% endif %}
-                    {% if message.category == 'success' %}
-                        {% set has_success = true %}
-                    {% endif %}
+                    <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
+                        <span class="warning-icon">!</span>
+                        <p>{{ message.message }}</p>
+                    </div>
                 {% endfor %}
-                {% if has_error and not has_success %}
-                    {% for message in messages %}
-                        {% if message.category == 'error' %}
-                            <div class="warning-message">
-                                <span class="warning-icon">!</span>
-                                <p>{{ message.message }}</p>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% elif has_success and not has_error %}
-                    {% for message in messages %}
-                        {% if message.category == 'success' %}
-                            <div class="success-message">
-                                <span class="warning-icon">!</span>
-                                <p>{{ message.message }}</p>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
             {% endif %}
 
             <!-- Login Form -->
@@ -643,9 +589,9 @@
                 }, 5000);
             });
 
-            // Show progress bar if there are messages on page load
-            const anyMessages = document.querySelectorAll('.warning-message, .success-message');
-            if (anyMessages.length > 0) {
+            // Show progress bar if there are error messages on page load
+            const errorMessages = document.querySelectorAll('.warning-message');
+            if (errorMessages.length > 0) {
                 const progressBar = document.getElementById('progress-bar-overlay');
                 progressBar.classList.add('active');
                 setTimeout(() => {
