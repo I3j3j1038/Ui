@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register</title>
+    <style>
+        :root {
+            --md-sys-color-primary: #1e3a8a;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d0e7ff;
+            --md-sys-color-on-primary-container: #0f1e5e;
+            --md-sys-color-secondary: #10b981;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #a7f3d0;
+            --md-sys-color-on-secondary-container: #064e3b;
+            --md-sys-color-surface: #f0f7ff;
+            --md-sys-color-surface-container-low: #f8fafc;
+            --md-sys-color-on-surface: #1e293b;
+            --md-sys-color-on-surface-variant: #64748b;
+            --md-sys-color-outline: #e2e8f0;
+            --md-sys-color-shadow: rgba(0, 0, 0, 0.1);
+            --md-typ-display-large: 3.5rem;
+            --md-typ-headline-medium: 2rem;
+            --md-typ-title-large: 1.5rem;
+            --md-typ-body-medium: 1rem;
+            --md-typ-label-large: 0.875rem;
+            --font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px var(--md-sys-color-shadow));
+        }
+
+        .headline-small {
+            font-size: var(--md-typ-title-large);
+            font-weight: 700;
+            line-height: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            margin-top: calc(var(--spacing-lg) + 72px);
+        }
+
+        .page {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: var(--spacing-lg);
+            box-shadow: var(--md-sys-elevation-1);
+            width: 100%;
+            animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        .card h2 {
+            font-size: var(--md-typ-headline-medium);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.02em;
+        }
+
+        .card p.body-medium {
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface-variant);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .label-large {
+            font-size: var(--md-typ-label-large);
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .text-field {
+            padding: 14px var(--spacing-md);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: 16px;
+            background: var(--md-sys-color-surface);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            width: 100%;
+            min-height: 48px;
+        }
+
+        .text-field:focus {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+            outline: none;
+            font-weight: 700;
+        }
+
+        .btn {
+            position: relative;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--md-sys-shape-corner-large);
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .btn-filled {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .btn-filled:hover {
+            background: var(--md-sys-color-primary-container);
+            box-shadow: var(--md-sys-elevation-2);
+            transform: scale(1.02);
+        }
+
+        .btn-filled:active {
+            background: var(--md-sys-color-secondary);
+            transform: scale(0.98);
+        }
+
+        .btn-filled::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-filled:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--md-sys-color-outline);
+            gap: var(--spacing-sm);
+        }
+
+        .btn-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: var(--spacing-md);
+            cursor: pointer;
+            font-size: var(--md-typ-label-large);
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            min-height: 48px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-tab:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .btn-tab.active {
+            color: var(--md-sys-color-primary);
+            border-bottom: 3px solid var(--md-sys-color-primary);
+            background: var(--md-sys-color-surface);
+        }
+
+        .btn-tab:active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .btn-tab::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-tab:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .auth-form {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s cubic-bezier(0.2, 0, 0, 1), transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .auth-form.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .warning-message {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: #fee2e2;
+            border-radius: var(--md-sys-shape-corner-small);
+            border-left: 4px solid #dc2626;
+            margin-bottom: var(--spacing-md);
+            justify-content: flex-start;
+            animation: slideIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .success-message {
+            background: var(--md-sys-color-secondary-container);
+            border-left: 4px solid var(--md-sys-color-secondary);
+            justify-content: flex-start;
+            animation: slideIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .warning-message.fade-out, .success-message.fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+
+        .warning-message p {
+            flex-grow: 1;
+            font-size: var(--md-typ-body-medium);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .warning-icon {
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .success-message .warning-icon {
+            color: var(--md-sys-color-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        .progress-bar-overlay {
+            position: fixed;
+            top: calc(72px + 5px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            height: 4px;
+            background: var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            overflow: hidden;
+            display: none;
+            z-index: 2000;
+        }
+
+        .progress-bar-overlay.active {
+            display: block;
+        }
+
+        .progress-bar-overlay .progress-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--md-sys-color-primary);
+            animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(20px); height: 0; padding: 0; margin: 0; }
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: var(--spacing-lg);
+                margin-top: calc(var(--spacing-lg) + 72px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .app-header {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .app-header img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .headline-small {
+                font-size: var(--md-typ-body-medium);
+                font-weight: 700;
+            }
+
+            .card {
+                padding: var(--spacing-md);
+            }
+
+            .card h2 {
+                font-size: 1.25rem;
+            }
+
+            .container {
+                padding: var(--spacing-sm);
+                margin-top: calc(var(--spacing-sm) + 56px);
+            }
+
+            .btn, .btn-tab {
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: var(--md-typ-label-large);
+                min-height: 48px;
+            }
+
+            .text-field {
+                padding: 14px var(--spacing-md);
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .progress-bar-overlay {
+                top: calc(56px + 5px);
+                max-width: 90%;
+            }
+        }
+
+        @media (hover: none) and (max-width: 600px) {
+            body {
+                font-weight: 400;
+                text-rendering: optimizeSpeed;
+            }
+
+            .text-field, .btn, .btn-tab {
+                font-weight: 500;
+            }
+
+            .text-field:focus {
+                font-weight: 700;
+            }
+
+            .btn-filled:active {
+                background: var(--md-sys-color-secondary);
+                transform: scale(0.98);
+            }
+
+            .btn-tab:active {
+                background: var(--md-sys-color-secondary-container);
+                color: var(--md-sys-color-on-secondary-container);
+            }
+        }
+
+        .switch-text {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-xl);
+            font-size: var(--md-typ-body-medium);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--md-sys-color-outline);
+        }
+
+        .switch-text p {
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .switch-link {
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .switch-link:hover {
+            color: var(--md-sys-color-secondary);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar Overlay -->
+    <div class="progress-bar-overlay" id="progress-bar-overlay">
+        <div class="progress-bar-fill"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="width: 40px; height: 40px;">
+        <h1 class="headline-small">DOR XL v.02</h1>
+    </header>
+
+    <!-- Content -->
+    <main id="content" class="page container">
+        <div class="card">
+            <!-- Updated message rendering to use 'messages' variable -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{{ 'success-message' if message.category == 'success' else 'warning-message' }}">
+                        <span class="warning-icon">!</span>
+                        <p>{{ message.message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Login Form -->
+            <div id="login" class="auth-form visible">
+                <h2>Login with Telegram ID</h2>
+                <p class="body-medium">Enter your Telegram User ID to receive OTP. Make sure you have started the bot.</p>
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="input-group">
+                        <label for="login_user_id" class="label-large">Telegram User ID</label>
+                        <input type="text" name="user_id" id="login_user_id" class="text-field" placeholder="Enter your Telegram User ID" required>
+                    </div>
+                    <button type="submit" class="btn btn-filled">Send OTP for Login</button>
+                </form>
+                
+                <div class="switch-text">
+                    <p>Don't have an account?</p>
+                    <span class="switch-link" onclick="showRegister()">Register</span>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register" class="auth-form">
+                <h2>Register with Telegram ID</h2>
+                <p class="body-medium">Enter your Telegram User ID to receive verification OTP. Make sure you have started the bot.</p>
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="input-group">
+                        <label for="register_user_id" class="label-large">Telegram User ID</label>
+                        <input type="text" name="user_id" id="register_user_id" class="text-field" placeholder="Enter your Telegram User ID" required>
+                    </div>
+                    <button type="submit" class="btn btn-filled">Send OTP for Registration</button>
+                </form>
+                
+                <div class="switch-text">
+                    <p>Already have an account?</p>
+                    <span class="switch-link" onclick="showLogin()">Login</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Show register form
+        function showRegister() {
+            document.getElementById('login').classList.remove('visible');
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('register').style.display = 'block';
+            document.getElementById('register').classList.add('visible');
+        }
+
+        // Show login form
+        function showLogin() {
+            document.getElementById('register').classList.remove('visible');
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('login').classList.add('visible');
+        }
+
+        // Show progress bar for button clicks
+        function showProgressBar(element) {
+            const progressBar = document.getElementById('progress-bar-overlay');
+            progressBar.classList.add('active');
+            element.style.pointerEvents = 'none';
+
+            // Handle form submission
+            if (element.tagName === 'BUTTON' && element.type === 'submit') {
+                const form = element.closest('form');
+                if (form) {
+                    form.submit();
+                }
+            }
+
+            // Hide progress bar after 3 seconds
+            setTimeout(() => {
+                progressBar.classList.remove('active');
+                element.style.pointerEvents = 'auto';
+            }, 3000);
+        }
+
+        // Add event listeners to form buttons and auto-dismiss messages
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.btn-filled[type="submit"]');
+            buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showProgressBar(button);
+                });
+            });
+
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.warning-message, .success-message');
+            messages.forEach((msg, index) => {
+                msg.style.animationDelay = `${index * 0.2}s`;
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+
+            // Show progress bar if there are error messages on page load
+            const errorMessages = document.querySelectorAll('.warning-message');
+            if (errorMessages.length > 0) {
+                const progressBar = document.getElementById('progress-bar-overlay');
+                progressBar.classList.add('active');
+                setTimeout(() => {
+                    progressBar.classList.remove('active');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
