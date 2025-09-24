@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beli Paket XUT</title>
+    <title>Beli Paket M</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* ===== MATERIAL 3 VARIABLES ===== */
+        /* CSS remains unchanged */
         :root {
             --md-sys-color-primary: #1e3a8a;
             --md-sys-color-on-primary: #ffffff;
@@ -42,7 +42,6 @@
             --md-sys-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
         }
 
-        /* ===== BASE STYLES ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -62,7 +61,6 @@
             overflow-x: hidden;
         }
 
-        /* ===== HEADER (Material 3 Top App Bar) ===== */
         .app-header {
             display: flex;
             align-items: center;
@@ -92,7 +90,6 @@
             letter-spacing: -0.02em;
         }
 
-        /* ===== BUTTON STYLES (Material 3 Buttons) ===== */
         .btn-icon {
             background: none;
             border: none;
@@ -308,7 +305,6 @@
             margin-top: var(--spacing-sm);
         }
 
-        /* ===== FORM STYLES (Material 3 Text Fields and Select) ===== */
         .container {
             width: 100%;
             max-width: 800px;
@@ -444,17 +440,14 @@
             margin-top: var(--spacing-md);
         }
 
-        /* Hide Beli Sekarang button by default */
-        .btn-filled.hidden {
+        .btn-filled.hidden, .btn-text.hidden {
             display: none;
         }
 
-        /* Hide payment method input group if no package is selected */
         .input-group.payment-method.hidden {
             display: none;
         }
 
-        /* ===== WARNING MESSAGE (Material 3 Alert) ===== */
         .warning-message {
             display: flex;
             flex-direction: column;
@@ -480,7 +473,6 @@
             color: var(--md-sys-color-secondary);
         }
 
-        /* ===== PROGRESS BAR ===== */
         .progress-bar {
             width: 100%;
             height: 4px;
@@ -498,11 +490,10 @@
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
         }
 
-        /* Progress bar overlay for button clicks */
         .progress-bar-overlay {
             position: fixed;
-            top: 72px; /* Header height */
-            margin-top: 5px; /* Explicit 5px margin-top */
+            top: 72px;
+            margin-top: 5px;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
@@ -526,7 +517,6 @@
             animation: progress 1.5s cubic-bezier(0.2, 0, 0, 1) infinite;
         }
 
-        /* ===== RESPONSIVE DESIGN ===== */
         @media (min-width: 768px) {
             .container {
                 padding: var(--spacing-lg);
@@ -581,8 +571,8 @@
             }
 
             .progress-bar-overlay {
-                top: 56px; /* Adjusted for smaller header height */
-                margin-top: 5px; /* Explicit 5px margin-top */
+                top: 56px;
+                margin-top: 5px;
                 max-width: 90%;
             }
 
@@ -602,7 +592,6 @@
             }
         }
 
-        /* ===== ANDROID-SPECIFIC OPTIMIZATIONS ===== */
         @media (hover: none) and (max-width: 600px) {
             body {
                 font-weight: 400;
@@ -649,7 +638,6 @@
             }
         }
 
-        /* ===== ANIMATIONS ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
@@ -695,6 +683,7 @@
                 <h2>Beli Paket XUT</h2>
                 <div class="progress-bar"><div class="progress-bar-fill"></div></div>
                 <form method="POST" action="{{ url_for('purchase') }}">
+                    <input type="hidden" name="payment_for" value="BUY_PACKAGE">
                     <div class="input-group">
                         <label for="package" class="label-large">Pilih Paket</label>
                         <div class="custom-select">
@@ -707,6 +696,11 @@
                         </div>
                         {% if not packages %}
                             <p class="body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-top: var(--spacing-sm);">Tidak ada paket tersedia saat ini.</p>
+                        {% else %}
+                            <!-- Single Detail button, shown only when a package is selected -->
+                            <div class="package-details" style="margin-top: var(--spacing-md);">
+                                <a href="#" id="package-detail-btn" class="btn btn-text hidden">Detail Paket</a>
+                            </div>
                         {% endif %}
                     </div>
                     <div class="input-group payment-method hidden" id="payment-method-group">
@@ -765,20 +759,19 @@
             if (element.classList.contains('copy-btn')) {
                 return; // Skip copy buttons
             }
-            element.style.pointerEvents = 'none'; // Disable further clicks
+            element.style.pointerEvents = 'none';
             const overlay = document.createElement('div');
             overlay.className = 'progress-bar-overlay active';
             overlay.innerHTML = '<div class="progress-bar-fill"></div>';
             document.body.appendChild(overlay);
 
-            // Handle form submission or navigation
             if (element.tagName === 'BUTTON' && element.type === 'submit') {
                 const form = element.closest('form');
                 if (form) {
-                    form.submit(); // Submit form and let the progress bar persist
+                    form.submit();
                 }
             } else if (element.tagName === 'A' && element.href) {
-                window.location.href = element.href; // Navigate and let the progress bar persist
+                window.location.href = element.href;
             }
         }
 
@@ -825,11 +818,55 @@
                 paymentLogo.alt = `${selectedOption.textContent} Logo`;
                 paymentLogoText.textContent = selectedOption.textContent;
                 paymentLogoContainer.style.display = 'flex';
-                buyButton.classList.remove('hidden'); // Show buy button
+                buyButton.classList.remove('hidden');
             } else {
                 paymentLogoContainer.style.display = 'none';
-                buyButton.classList.add('hidden'); // Hide buy button
+                buyButton.classList.add('hidden');
             }
+        }
+
+        // Toggle amount, wallet inputs, payment method, and detail button visibility
+        function toggleAmountInput() {
+            console.log('toggleAmountInput called'); // Debug log
+            const packageSelect = document.getElementById('package');
+            const paymentMethodGroup = document.getElementById('payment-method-group');
+            const paymentMethod = document.getElementById('payment_method');
+            const amountInput = document.getElementById('amount-input');
+            const walletInput = document.getElementById('wallet-input');
+            const detailButton = document.getElementById('package-detail-btn');
+
+            if (!packageSelect || !detailButton) {
+                console.error('packageSelect or detailButton not found');
+                return; // Exit if elements are not found
+            }
+
+            if (packageSelect.value) {
+                paymentMethodGroup.classList.remove('hidden');
+                // Show and update the Detail button
+                detailButton.classList.remove('hidden');
+                detailButton.href = `/package_details/${packageSelect.value}`;
+                detailButton.textContent = `Detail ${packageSelect.options[packageSelect.selectedIndex].text.split(' - ')[0]}`;
+            } else {
+                paymentMethodGroup.classList.add('hidden');
+                paymentMethod.value = '';
+                detailButton.classList.add('hidden'); // Hide Detail button when no package is selected
+                updatePaymentLogo();
+            }
+
+            if (['DANA', 'OVO', 'GOPAY', 'SHOPEEPAY'].includes(paymentMethod.value)) {
+                walletInput.style.display = 'block';
+            } else {
+                walletInput.style.display = 'none';
+            }
+
+            const selectedPackage = packageSelect.options[packageSelect.selectedIndex];
+            if (selectedPackage && parseInt(selectedPackage.dataset.price) === 0) {
+                amountInput.style.display = 'block';
+            } else {
+                amountInput.style.display = 'none';
+            }
+
+            updatePaymentLogo();
         }
 
         // Show progress bar and card animation on page load
@@ -852,8 +889,8 @@
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => card.classList.add('visible'));
 
-            // Add event listeners to Beli Sekarang and Kembali buttons
-            const buttons = document.querySelectorAll('.btn-filled, .btn-outlined');
+            // Add event listeners to buttons
+            const buttons = document.querySelectorAll('.btn-filled, .btn-outlined, .btn-text');
             buttons.forEach(button => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -861,51 +898,13 @@
                 });
             });
 
-            // Initialize payment method visibility and logo state
-            toggleAmountInput(); // Call to set initial state
+            toggleAmountInput(); // Initial call
         });
 
-        // Toggle amount, wallet inputs, and payment method visibility based on package and payment method
-        function toggleAmountInput() {
-            const packageSelect = document.getElementById('package');
-            const paymentMethodGroup = document.getElementById('payment-method-group');
-            const paymentMethod = document.getElementById('payment_method');
-            const amountInput = document.getElementById('amount-input');
-            const walletInput = document.getElementById('wallet-input');
-
-            // Show payment method group only if a package is selected
-            if (packageSelect.value) {
-                paymentMethodGroup.classList.remove('hidden');
-            } else {
-                paymentMethodGroup.classList.add('hidden');
-                paymentMethod.value = ''; // Reset payment method
-                updatePaymentLogo(); // Update logo and buy button state
-            }
-
-            // Show wallet input for e-wallet methods
-            if (['DANA', 'OVO', 'GOPAY', 'SHOPEEPAY'].includes(paymentMethod.value)) {
-                walletInput.style.display = 'block';
-            } else {
-                walletInput.style.display = 'none';
-            }
-
-            // Show amount input if package price is 0
-            const selectedPackage = packageSelect.options[packageSelect.selectedIndex];
-            if (selectedPackage && parseInt(selectedPackage.dataset.price) === 0) {
-                amountInput.style.display = 'block';
-            } else {
-                amountInput.style.display = 'none';
-            }
-
-            // Update buy button visibility
-            updatePaymentLogo();
-        }
-
-        // Ensure progress bar persists until page unloads
         window.addEventListener('beforeunload', () => {
             const overlay = document.querySelector('.progress-bar-overlay.active');
             if (overlay) {
-                overlay.style.display = 'block'; // Keep progress bar visible during navigation
+                overlay.style.display = 'block';
             }
         });
     </script>
